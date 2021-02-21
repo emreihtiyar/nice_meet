@@ -25,10 +25,11 @@ let roomId = null;
 function init() { //Main gibi diğer fonksiyonlar tanımlanır ancak sadece butonlara bağlanılarak çalışır
   //Butonlara basılma durumunda hangi fonksiyonların çalışacağı atanıyor
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
-  document.querySelector('#screenBtn').addEventListener('click', openUserScreen); 
+  document.querySelector('#screenBtn').addEventListener('click', openUserScreen);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
   document.querySelector('#createBtn').addEventListener('click', createRoom);
   document.querySelector('#joinBtn').addEventListener('click', joinRoom);
+  document.querySelector('#signOutBtn').addEventListener('click', signOut);
 
   roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog')); //Yeni bir diyalog objesi oluşuyor ÖĞREN
 }
@@ -76,7 +77,7 @@ async function createRoom() { //Oda Oluştur butonuna basınca çalışacak fonk
   roomId = roomRef.id;
   console.log(`New room created with SDP offer. Room ID: ${roomRef.id}`);
   document.querySelector(
-      '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+    '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
   // Code for creating a room above
 
   peerConnection.addEventListener('track', event => {
@@ -117,13 +118,13 @@ function joinRoom() { //Odaya katıl butonuna çalışacak fonksiyon
   document.querySelector('#joinBtn').disabled = true;
 
   document.querySelector('#confirmJoinBtn').
-      addEventListener('click', async () => {
-        roomId = document.querySelector('#room-id').value;
-        console.log('Join room: ', roomId);
-        document.querySelector(
-            '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
-        await joinRoomById(roomId);
-      }, {once: true});
+    addEventListener('click', async () => {
+      roomId = document.querySelector('#room-id').value;
+      console.log('Join room: ', roomId);
+      document.querySelector(
+        '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
+      await joinRoomById(roomId);
+    }, { once: true });
   roomDialog.open();
 }
 
@@ -194,7 +195,7 @@ async function joinRoomById(roomId) {//Odaya katıl butonuna basılınca çalı�
 
 async function openUserMedia(e) { //Kamera ve Mikrofon aç butonuna basılınca çalışacak fonksiyon
   const stream = await navigator.mediaDevices.getUserMedia(
-      {video: true, audio: true});
+    { video: true, audio: true });
   document.querySelector('#localVideo').srcObject = stream;
   localStream = stream;
   remoteStream = new MediaStream();
@@ -208,23 +209,23 @@ async function openUserMedia(e) { //Kamera ve Mikrofon aç butonuna basılınca 
 }
 
 async function openUserScreen(e) { //Kamera ve Mikrofon aç butonuna basılınca çalışacak fonksiyon
-    let captureStream = null;
-    let displayMediaOptions = {
-      video: {
-        cursor: "always"
-      },
-      audio: false
-    };
+  let captureStream = null;
+  let displayMediaOptions = {
+    video: {
+      cursor: "always"
+    },
+    audio: false
+  };
 
-    try {
-      captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-      document.querySelector('#localVideo').srcObject = captureStream;
-      localStream = captureStream;
-      remoteStream = new MediaStream();
-      document.querySelector('#remoteVideo').srcObject = remoteStream;
-    } catch(err) {
-      console.error("Error UserScreen: " + err);
-    }
+  try {
+    captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+    document.querySelector('#localVideo').srcObject = captureStream;
+    localStream = captureStream;
+    remoteStream = new MediaStream();
+    document.querySelector('#remoteVideo').srcObject = remoteStream;
+  } catch (err) {
+    console.error("Error UserScreen: " + err);
+  }
 
   console.log('Stream:', document.querySelector('#localVideo').srcObject);
   document.querySelector('#cameraBtn').disabled = true;
@@ -276,7 +277,7 @@ async function hangUp(e) { //Hangup(Kapat) butonuna basılınca çalışacak fon
 function registerPeerConnectionListeners() { //Peer bağlantılarını Dinler
   peerConnection.addEventListener('icegatheringstatechange', () => {
     console.log(
-        `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+      `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
   });
 
   peerConnection.addEventListener('connectionstatechange', () => {
@@ -289,10 +290,14 @@ function registerPeerConnectionListeners() { //Peer bağlantılarını Dinler
 
   peerConnection.addEventListener('iceconnectionstatechange ', () => {
     console.log(
-        `ICE connection state change: ${peerConnection.iceConnectionState}`);
+      `ICE connection state change: ${peerConnection.iceConnectionState}`);
   });
 }
 
+async function signOut(e) {
+  firebase.auth().signOut();
+  window.location.href = "login.html";
+}
 
 
 init(); //init fonksiyonunu çağırır, init ise butonalara Listenerları ekler

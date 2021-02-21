@@ -12,6 +12,7 @@
     <script defer src="/__/firebase/5.9.3/firebase-app.js"></script>
     <!-- include only the Firebase features as you need -->
     <script defer src="/__/firebase/5.9.3/firebase-firestore.js"></script>
+    <script defer src="/__/firebase/5.9.3/firebase-auth.js"></script>
     <!-- initialize the SDK after all desired features are loaded -->
     <script defer src="/__/firebase/init.js"></script>
 
@@ -39,6 +40,10 @@
     <button class="mdc-button mdc-button--raised" disabled id="hangupBtn">
         <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
         <span class="mdc-button__label">Hangup</span>
+    </button>
+    <button class="mdc-button mdc-button--raised" id="signOutBtn">
+        <i class="material-icons mdc-button__icon" aria-hidden="true">signOut</i>
+        <span class="mdc-button__label">signOut</span>
     </button>
 </div>
 <div>
