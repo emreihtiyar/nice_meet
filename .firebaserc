@@ -1,6 +1,7 @@
 {
   "projects": {
     "default": "fir-rtc-89b99",
-    "cozum": "nicetomeet-33b4a"
+    "cozum": "nicetomeet-33b4a",
+    "Nice_Meet": "nicetomeet-33b4a"
   }
 }

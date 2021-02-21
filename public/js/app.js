@@ -1,4 +1,4 @@
-//Todo List
+//Todo List Yapacaklarim
 //mdc neyin kısalması ve ne işe yarıyor ÖĞREN
 
 
