@@ -24,6 +24,7 @@ let roomId = null;
 
 function init() { //Main gibi diğer fonksiyonlar tanımlanır ancak sadece butonlara bağlanılarak çalışır
   //Butonlara basılma durumunda hangi fonksiyonların çalışacağı atanıyor
+  //var myFirebase = firebase;
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
   document.querySelector('#screenBtn').addEventListener('click', openUserScreen);
   document.querySelector('#hangupBtn').addEventListener('click', hangUp);
@@ -295,9 +296,27 @@ function registerPeerConnectionListeners() { //Peer bağlantılarını Dinler
 }
 
 async function signOut(e) {
-  firebase.auth().signOut();
-  window.location.href = "login.html";
+  try {
+    firebase.auth().signOut()
+      window.location.href = "login.html";
+  } catch (error) {
+    alert(error)
+  }
 }
 
+function authControl() {
+  firebase.auth().onAuthStateChanged(function (user) {
+    if (user) {
+      //Kullanici giris yapmis
+    } else {
+      //alert("BOS")
+      window.location.href = "login.html";
+    }
+  })
+}
 
 init(); //init fonksiyonunu çağırır, init ise butonalara Listenerları ekler
+
+$(document).ready(function () {
+  authControl();
+});
