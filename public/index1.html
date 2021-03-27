@@ -32,11 +32,38 @@
 
 <body>
     <h1>Nice To Meet!</h1>
+    <div id="buttons">
+        <button class="mdc-button mdc-button--raised" id="cameraBtn">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">perm_camera_mic</i>
+            <span class="mdc-button__label">Open camera & microphone</span>
+        </button>
+        <button class="mdc-button mdc-button--raised" id="screenBtn">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">perm_camera_mic</i>
+            <span class="mdc-button__label">Open Screen</span>
+        </button>
+        <button class="mdc-button mdc-button--raised" disabled id="createBtn">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">group_add</i>
+            <span class="mdc-button__label">Create room</span>
+        </button>
+        <button class="mdc-button mdc-button--raised" disabled id="joinBtn">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">group</i>
+            <span class="mdc-button__label">Join room</span>
+        </button>
+        <button class="mdc-button mdc-button--raised" disabled id="hangupBtn">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">close</i>
+            <span class="mdc-button__label">Hangup</span>
+        </button>
+        <button class="mdc-button mdc-button--raised" id="signOutBtn">
+            <i class="material-icons mdc-button__icon" aria-hidden="true">signOut</i>
+            <span class="mdc-button__label">signOut</span>
+        </button>
+    </div>
     <div>
         <span id="currentRoom"></span>
     </div>
     <div id="videos">
-        <video id="localVideo" muted autoplay playsinline ></video>
+        <video id="localVideo" muted autoplay playsinline></video>
+        <video id="remoteVideo" autoplay playsinline></video>
     </div>
     <div class="mdc-dialog" id="room-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
         aria-describedby="my-dialog-content">
@@ -63,28 +90,6 @@
             </div>
         </div>
         <div class="mdc-dialog__scrim"></div>
-    </div>
-    <div id="buttons">
-        <button class="mdc-button mdc-button--raised" id="cameraBtn">
-            <i class="material-icons mdc-button__icon" aria-hidden="true">perm_camera_mic</i>
-            <span class="mdc-button__label">Open camera & microphone</span>
-        </button>
-        <button class="mdc-button mdc-button--raised" disabled id="createBtn">
-            <i class="material-icons mdc-button__icon" aria-hidden="true">group_add</i>
-            <span class="mdc-button__label">Create room</span>
-        </button>
-        <div>
-            <button class="mdc-button mdc-button--raised" disabled id="joinBtn">
-                <i class="material-icons mdc-button__icon" aria-hidden="true">group</i>
-                <span class="mdc-button__label">Join room</span>
-            </button>
-
-
-        </div>
-        <button class="mdc-button mdc-button--raised" id="signOutBtn">
-            <i class="material-icons mdc-button__icon" aria-hidden="true">signOut</i>
-            <span class="mdc-button__label">signOut</span>
-        </button>
     </div>
     <!-- My Js File, user adding in Firebase -->
     <script src="js/app.js"></script>
