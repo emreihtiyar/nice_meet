@@ -15,5 +15,15 @@
         "destination": "/index.html"
       }
     ]
+  },
+  "emulators": {
+    "hosting": {
+      "port": 5000,
+      "host": "0.0.0.0"
+    },
+    "firestore": {
+      "port": 5000,
+      "host": "0.0.0.0"
+    }
   }
 }
