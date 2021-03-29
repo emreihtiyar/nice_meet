@@ -12,15 +12,17 @@ const configuration = {
   iceCandidatePoolSize: 10,
 };
 
-let peerConnection = null;
+//let peerConnection = null;
 let localStream = null;
 let remoteStream = null;
 //let remoteStream2 = null;
 let roomDialog = null;
 let roomId = null;
 
-let second = false;
-peerConnections = [];
+let connectedCandidates = [];
+let peerConnections = [];
+let sesionDescriptions = {};
+let remoteStreams = [];
 
 function init() {
   document.querySelector('#cameraBtn').addEventListener('click', openUserMedia);
@@ -37,31 +39,45 @@ async function createRoom() {
   const roomRef = await db.collection('rooms').doc();
 
   console.log('satir-36 Create PeerConnection with configuration: ', configuration);
-  peerConnections[peerConnections.length] = new RTCPeerConnection(configuration);
+  peerConnections.push(new RTCPeerConnection(configuration));
 
   console.log("satir-39 registerPeerConnectionListeners cagiriliyor.... <CreateRoom>");
   registerPeerConnectionListeners();
 
   localStream.getTracks().forEach(track => {
-    peerConnections[0].addTrack(track, localStream);
+    peerConnections.forEach(peerConnection => {
+      peerConnection.addTrack(track, localStream);
+    });
   });
 
   // Code for collecting ICE candidates below
   const callerCandidatesCollection = roomRef.collection('callerCandidates');
 
-  peerConnections[0].addEventListener('icecandidate', event => {
-    if (!event.candidate) {
-      console.log('satir-51 Got final candidate!');
-      return;
-    }
-    console.log('satir-54 Got candidate: ', event.candidate);
-    callerCandidatesCollection.add(event.candidate.toJSON());
+  peerConnections.forEach(peerConnection => {
+    peerConnection.addEventListener('icecandidate', event => {
+      if (!event.candidate) {
+        console.log('satir-51 Got final candidate!');
+        return;
+      }
+      console.log('satir-54 Got candidate: ', event.candidate);
+      callerCandidatesCollection.add(event.candidate.toJSON());
+    });
   });
   // Code for collecting ICE candidates above
 
   // Code for creating a room below
-  const offer = await peerConnections[0].createOffer();
-  await peerConnections[0].setLocalDescription(offer);
+  let offer = null;
+  /*await peerConnections.forEach(async (peerConnection) =>{
+    offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    console.log('satir-62 Created offer:', offer);
+  });*/
+  for (const peerConnection of peerConnections) {
+    offer = await peerConnection.createOffer();
+    await peerConnection.setLocalDescription(offer);
+    console.log('satir-62 Created offer:', offer);
+  }
+
   console.log('satir-62 Created offer:', offer);
 
   const roomWithOffer = {
@@ -74,15 +90,17 @@ async function createRoom() {
   roomId = roomRef.id;
   console.log(`satir-72 New room created with SDP offer. Room ID: ${roomRef.id}`);
   document.querySelector(
-      '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
+    '#currentRoom').innerText = `Current room is ${roomRef.id} - You are the caller!`;
   // Code for creating a room above
 
-  peerConnections[0].addEventListener('track', event => {
-    console.log('satir-78 Got remote track:', event.streams[0]);
-    
-    event.streams[0].getTracks().forEach(track => {
-      console.log('satir-81 Add a track to the remoteStream:', track);
-      remoteStream.addTrack(track);
+  peerConnections.forEach(peerConnection => {
+    peerConnection.addEventListener('track', event => {
+      console.log('satir-78 Got remote track:', event.streams[0]);
+
+      event.streams[0].getTracks().forEach(track => {
+        console.log('satir-81 Add a track to the remoteStream:', track);
+        remoteStream.addTrack(track);
+      });
     });
   });
 
@@ -91,18 +109,24 @@ async function createRoom() {
   roomRef.onSnapshot(async snapshot => {
     const data = snapshot.data();
     console.log('Satir-90 Room Snapshot');
-    console.log('peerConnection.currentRemoteDescription:', peerConnections[0].currentRemoteDescription);
-    console.log('!peerConnection.currentRemoteDescription:', !peerConnections[0].currentRemoteDescription);
-    console.log('data:', data);
-    console.log('data.answer:', data.answer);
-    //Altta eger suanda bir baglantiya bagli degilsek calisiyor bunu duzeltmeye calisacagim
-    if (!peerConnections[0].currentRemoteDescription && data && data.answer) {
-      console.log('satir-92 Got remote description: ', data.answer);
-      const rtcSessionDescription = new RTCSessionDescription(data.answer);
-      await peerConnections[0].setRemoteDescription(rtcSessionDescription);
-      second = true;
+    console.log('peerConnections len: ',peerConnections.length);
+    console.log('peerConnections',peerConnections);
+    for (const peerConnection of peerConnections) {
+      console.log('peerConnection',peerConnection);
+      console.log('peerConnection.currentRemoteDescription:', peerConnection.currentRemoteDescription);
+      console.log('data:', data);
+      console.log('data.answer:', data.answer);
     }
 
+    //
+    for (const peerConnection of peerConnections) {
+      if (!peerConnections[0].currentRemoteDescription && data && data.answer) {
+        console.log('satir-92 Got remote description: ', data.answer);
+        const rtcSessionDescription = new RTCSessionDescription(data.answer);
+        await peerConnection.setRemoteDescription(rtcSessionDescription);
+        sesionDescriptions[peerConnection] = rtcSessionDescription
+      }
+    }
   });
   // Listening for remote session description above
 
@@ -112,11 +136,14 @@ async function createRoom() {
       if (change.type === 'added') {
         let data = change.doc.data();
         console.log(`satir-104 Got new remote ICE candidate: ${JSON.stringify(data)}`);
-        await peerConnections[0].addIceCandidate(new RTCIceCandidate(data));
-        if (!peerConnections[0].currentRemoteDescription && data && data.answer) {
-          console.log('satir-107 Got remote description: ', data.answer);
-          const rtcSessionDescription = new RTCSessionDescription(data.answer);
-          await peerConnections[0].setRemoteDescription(rtcSessionDescription);
+        for (const peerConnection of peerConnections) { //Biri baglanmaya calisinca buraya geliyor
+          await peerConnection.addIceCandidate(new RTCIceCandidate(data));
+          if (/*!peerConnections[0].currentRemoteDescription && */data && data.answer) {
+            console.log('satir-107 Got remote description: ', data.answer);
+            const rtcSessionDescription = new RTCSessionDescription(data.answer);
+            await peerConnection.setRemoteDescription(rtcSessionDescription);
+            sesionDescriptions[peerConnection] = rtcSessionDescription;
+          }
         }
       }
     });
@@ -128,14 +155,12 @@ function joinRoom() {
   document.querySelector('#createBtn').disabled = true;
   document.querySelector('#joinBtn').disabled = true;
 
-  document.querySelector('#confirmJoinBtn').
-      addEventListener('click', async () => {
-        roomId = document.querySelector('#room-id').value;
-        console.log('satir-124 Join room: ', roomId);
-        document.querySelector(
-            '#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
-        await joinRoomById(roomId);
-      }, {once: true});
+  document.querySelector('#confirmJoinBtn').addEventListener('click', async () => {
+      roomId = document.querySelector('#room-id').value;
+      console.log('satir-124 Join room: ', roomId);
+      document.querySelector('#currentRoom').innerText = `Current room is ${roomId} - You are the callee!`;
+      await joinRoomById(roomId);
+    }, { once: true });
   roomDialog.open();
 }
 
@@ -147,40 +172,50 @@ async function joinRoomById(roomId) {
 
   if (roomSnapshot.exists) {
     console.log('satir-139 Create PeerConnection with configuration: ', configuration);
-    peerConnections[peerConnections.length] = new RTCPeerConnection(configuration);
+    peerConnections.push(new RTCPeerConnection(configuration));
     console.log("satir-141 registerPeerConnectionListeners cagiriliyor.... <JoinRoomById>");
     registerPeerConnectionListeners();
     localStream.getTracks().forEach(track => {
-      peerConnections[0].addTrack(track, localStream);
+      peerConnections.forEach(peerConnection => {
+        peerConnection.addTrack(track, localStream);
+      });
     });
 
     // Code for collecting ICE candidates below
     const calleeCandidatesCollection = roomRef.collection('calleeCandidates');
-    peerConnections[0].addEventListener('icecandidate', event => {
-      if (!event.candidate) {
-        console.log('satir-151 Got final candidate!');
-        return;
-      }
-      console.log('satir-154 Got candidate: ', event.candidate);
-      calleeCandidatesCollection.add(event.candidate.toJSON());
+    peerConnections.forEach(peerConnection => {
+      peerConnection.addEventListener('icecandidate', event => {
+        if (!event.candidate) {
+          console.log('satir-151 Got final candidate!');
+          return;
+        }
+        console.log('satir-154 Got candidate: ', event.candidate);
+        calleeCandidatesCollection.add(event.candidate.toJSON());
+      });
     });
+
     // Code for collecting ICE candidates above
 
-    peerConnections[0].addEventListener('track', event => {
-      console.log('satir-160 Got remote track:', event.streams[0]);
-      event.streams[0].getTracks().forEach(track => {
-        console.log('satir-162 Add a track to the remoteStream:', track);
-        remoteStream.addTrack(track);
+    peerConnections.forEach(peerConnection => {
+      peerConnection.addEventListener('track', event => {
+        console.log('satir-160 Got remote track:', event.streams[0]);
+        event.streams[0].getTracks().forEach(track => {
+          console.log('satir-162 Add a track to the remoteStream:', track);
+          remoteStream.addTrack(track);
+        });
       });
     });
 
     // Code for creating SDP answer below
     const offer = roomSnapshot.data().offer;
     console.log('satir-169 Got offer:', offer);
-    await peerConnections[0].setRemoteDescription(new RTCSessionDescription(offer));
-    const answer = await peerConnections[0].createAnswer();
-    console.log('satir-172 Created answer:', answer);
-    await peerConnections[0].setLocalDescription(answer);
+    let answer = null;
+    for (const peerConnection of peerConnections) {
+      await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
+      answer = await peerConnection.createAnswer();
+      console.log('satir-172 Created answer:', answer);
+      await peerConnection.setLocalDescription(answer);
+    }
 
     const roomWithAnswer = {
       answer: {
@@ -197,7 +232,9 @@ async function joinRoomById(roomId) {
         if (change.type === 'added') {
           let data = change.doc.data();
           console.log(`satir-189 Got new remote ICE candidate: ${JSON.stringify(data)}`);
-          await peerConnections[0].addIceCandidate(new RTCIceCandidate(data));
+          for (const peerConnection of peerConnections) {
+            await peerConnection.addIceCandidate(new RTCIceCandidate(data));
+          }
         }
       });
     });
@@ -207,7 +244,7 @@ async function joinRoomById(roomId) {
 
 async function openUserMedia(e) {
   const stream = await navigator.mediaDevices.getUserMedia(
-      {video: true, audio: false}); //ses ve goruntunun hangilerininn iletileceginibelirliyoruz.
+    { video: true, audio: false }); //ses ve goruntunun hangilerininn iletileceginibelirliyoruz.
   document.querySelector('#localVideo').srcObject = stream;
   localStream = stream;
   remoteStream = new MediaStream();
@@ -264,7 +301,7 @@ async function hangUp(e) {
 function registerPeerConnectionListeners() {
   peerConnections[0].addEventListener('icegatheringstatechange', () => {
     console.log(
-        `satir-257 ICE gathering state changed: ${peerConnections[0].iceGatheringState}`);
+      `satir-257 ICE gathering state changed: ${peerConnections[0].iceGatheringState}`);
   });
 
   peerConnections[0].addEventListener('connectionstatechange', () => {
@@ -277,7 +314,7 @@ function registerPeerConnectionListeners() {
 
   peerConnections[0].addEventListener('iceconnectionstatechange ', () => {
     console.log(
-        `270 ICE connection state change: ${peerConnections[0].iceConnectionState}`);
+      `270 ICE connection state change: ${peerConnections[0].iceConnectionState}`);
   });
 }
 
