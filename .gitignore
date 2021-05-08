@@ -66,8 +66,10 @@ node_modules/
 
 .idea
 
-#,rnek voideolar
-videos/
 
 old/
 public/old/
+package-lock.json
+package.json
+.firebaserc
+firebase.json
