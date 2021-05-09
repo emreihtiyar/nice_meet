@@ -233,7 +233,7 @@ function signalHangup(roomRef) {
 function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
     console.log(arguments.callee.name," Fonksiyonun başındayız.");
     
-    const callerCandidatesCollection = roomRef.collection(nameId);
+    const callerCandidatesCollection = roomRef.collection(nameId).doc("Connections").collection("ICECandidates");
     peerConnection.addEventListener('icecandidate', event => {
         if (!event.candidate) {
             console.log('Got final candidate!');
@@ -252,7 +252,8 @@ function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
 
 async function receiveICECandidates(peerConnection, roomRef, remoteEndpointID, nameId) {
     console.log(arguments.callee.name," Fonksiyonun başındayız.");
-    roomRef.collection(remoteEndpointID).where("name", "==", nameId).onSnapshot(snapshot => {
+    
+    roomRef.collection(remoteEndpointID).doc("Connections").collection("ICECandidates").where("name", "==", nameId).onSnapshot(snapshot => {
         snapshot.docChanges().forEach(async change => {
             if (change.type === 'added' && change.doc.id != "SDP") {
                 //console.log(change);
@@ -262,6 +263,7 @@ async function receiveICECandidates(peerConnection, roomRef, remoteEndpointID, n
             }
         });
     });
+    
     console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
