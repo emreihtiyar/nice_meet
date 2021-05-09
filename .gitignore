@@ -69,6 +69,7 @@ node_modules/
 
 old/
 public/old/
+js/app_test.js
 package-lock.json
 package.json
 .firebaserc

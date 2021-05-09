@@ -1,6 +1,17 @@
 const menu = new mdc.menu.MDCMenu(document.querySelector('.mdc-menu'));
 let db = null;
+let auth = null;
 
+const firebaseConfig = {
+    apiKey: "AIzaSyCeuHu2KoX_rSVNAeKATRSDQEmMps1bHvs",
+    authDomain: "nicetomeet-33b4a.firebaseapp.com",
+    databaseURL: "https://nicetomeet-33b4a-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "nicetomeet-33b4a",
+    storageBucket: "nicetomeet-33b4a.appspot.com",
+    messagingSenderId: "242610313695",
+    appId: "1:242610313695:web:6c804cd2dff52ad5990c6a",
+    measurementId: "G-F840F7K0YQ"
+};
 
 const configuration = {
     iceServers: [
@@ -29,14 +40,19 @@ let contentShown = false;
 let swipeEventFunction;
 var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
+let currentUser = null;
+let currentUserID = null;
 
 function isHandheld() {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     let check = false;
     (function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true; })(navigator.userAgent || navigator.vendor || window.opera);
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
     return check;
 };
 
 function videoToggleEnable() {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.", " Bu fonksiyon tetikleyici içerir.");
     document.getElementById('videoButton').addEventListener('click', () => {
         if (videoState) {
             videoState = false;
@@ -50,9 +66,11 @@ function videoToggleEnable() {
             document.querySelector('#videoButton').classList.remove('toggle');
         }
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function toggleOnContent(roomRef) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     document.getElementById('localVideo').srcObject = captureStream;
     document.getElementById('screenShareButton').innerText = "stop_screen_share";
     document.getElementById('screenShareButton').classList.add('toggle');
@@ -61,20 +79,25 @@ function toggleOnContent(roomRef) {
     captureStream.getVideoTracks()[0].onended = () => {
         contentToggleOff(roomRef);
     }
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 
 function signalContentShare(roomRef) {
-    contentId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
+    //TODO: rasgeleID ve  display:'content' burada atanıyor ancak bu rasgeleyi userid yaparsam bu sefer aynı adda olan ve display:'user' olan silinecek buda kamera content bilgisini siler
+    contentId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15); 
     doc = roomRef.collection('partyList').doc(contentId).set({
         "name": contentId,
         "display": "content"
     });
     requestConnectionToCurrentPeers(roomRef, contentId, true);
     acceptConnectionsFromJoiningPeers(roomRef, contentId, true);
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function contentToggleButton(roomRef) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     if (!screenState) {
         const displayMediaOptions = {
             video: {
@@ -83,66 +106,78 @@ async function contentToggleButton(roomRef) {
             audio: false
         };
         try {
-            console.log('Toggling screen share');
+            //console.log('Toggling screen share');
             captureStream = await startCapture(displayMediaOptions);
             toggleOnContent(roomRef);
         } catch (error) {
-            console.log(error.message);
+            //console.log(error.message);
         }
     } else {
         contentToggleOff(roomRef);
     }
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function contentToggleOff(roomRef) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     roomRef.collection('partyList').doc(contentId).delete();
     stopCapture(captureStream);
     document.getElementById('localVideo').srcObject = cameraStream;
     screenState = false;
     document.getElementById('screenShareButton').innerText = 'screen_share';
     document.getElementById('screenShareButton').classList.remove('toggle');
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function startCapture(displayMediaOptions) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     let captureStream = null;
     captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
     return captureStream;
 }
 
 function stopCapture(stream) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     let tracks = stream.getTracks();
     tracks.forEach(track => track.stop());
     stream = null;
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function muteToggleEnable() {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     document.querySelector('#muteButton').addEventListener('click', () => {
         if (!muteState) {
-            console.log("Muting");
+            //console.log("Muting");
             muteState = true;
             cameraStream.getAudioTracks()[0].enabled = false;
             document.querySelector('#muteButton').innerText = "mic_off";
             document.getElementById('muteButton').classList.add('toggle');
         } else {
-            console.log("Unmuting");
+            //console.log("Unmuting");
             muteState = false;
             cameraStream.getAudioTracks()[0].enabled = true;
             document.querySelector('#muteButton').innerText = "mic";
             document.getElementById('muteButton').classList.remove('toggle');
         }
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function switchStream(peerConnection, stream) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     let videoTrack = stream.getVideoTracks()[0];
     var sender = peerConnection.getSenders().find(function (s) {
         return s.track.kind == videoTrack.kind;
     });
-    console.log('found sender:', sender);
+    //console.log('found sender:', sender);
     sender.replaceTrack(videoTrack);
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function changeCamera(deviceId) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     navigator.mediaDevices.getUserMedia({
         video: {
             deviceId: deviceId
@@ -152,41 +187,52 @@ function changeCamera(deviceId) {
         document.getElementById('localVideo').srcObject = stream;
         cameraStream = stream
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function addStream(peerConnection, stream) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     stream.getTracks().forEach(track => {
         peerConnection.addTrack(track, stream);
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function createOffer(peerConnection) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    console.log('Created offer:', offer);
+    //console.log('Created offer:', offer);
     offer.sdp = preferCodec(offer.sdp, "h264");
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
     return offer;
 }
 
 async function createAnswer(peerConnection) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     const answer = await peerConnection.createAnswer();
-    console.log('Created answer:', answer);
+    //console.log('Created answer:', answer);
     await peerConnection.setLocalDescription(answer);
     answer.sdp = preferCodec(answer.sdp, "h264");
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
     return answer
 }
 
 function signalHangup(roomRef) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     document.querySelector('#hangupBtn').addEventListener('click', async () => {
-        console.log("Disconnecting");
+        //console.log("Disconnecting");
         roomRef.collection('partyList').doc(nameId).delete();
         if (screenState) {
             roomRef.collection('partyList').doc(contentId).delete();
         }
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
+    
     const callerCandidatesCollection = roomRef.collection(nameId);
     peerConnection.addEventListener('icecandidate', event => {
         if (!event.candidate) {
@@ -200,60 +246,75 @@ function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
             })
         });
     });
+    
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function receiveICECandidates(peerConnection, roomRef, remoteEndpointID, nameId) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     roomRef.collection(remoteEndpointID).where("name", "==", nameId).onSnapshot(snapshot => {
         snapshot.docChanges().forEach(async change => {
             if (change.type === 'added' && change.doc.id != "SDP") {
-                console.log(change);
+                //console.log(change);
                 let data = change.doc.data();
-                console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
+                //console.log(`Got new remote ICE candidate: ${JSON.stringify(data)}`);
                 await peerConnection.addIceCandidate(new RTCIceCandidate(data));
             }
         });
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function addUserToRoom(roomRef) {
-    let Id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    roomRef.collection('partyList').doc(Id).set({
-        'name': Id,
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
+    
+    //let Id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    roomRef.collection('partyList').doc(currentUserID).set({
+        'name': currentUserID,
         'display': 'user'
     });
-    return Id;
+    
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
+    return currentUserID;
 }
 
 async function receiveAnswer(peerConnection, roomRef, peerId, nameId) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     roomRef.collection(nameId).doc('SDP').collection('answer').doc(peerId).onSnapshot(async snapshot => {
         if (snapshot.exists) {
             const data = snapshot.data();
-            console.log('Got remote description: ', data.answer);
+            //console.log('Got remote description: ', data.answer);
             const rtcSessionDescription = new RTCSessionDescription(data.answer);
             await peerConnection.setRemoteDescription(rtcSessionDescription);
         }
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 function receiveStream(peerConnection, remoteEndpointID, isPeerContent) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     peerConnection.addEventListener('track', event => {
-        console.log('Got remote track:', event.streams[0]);
+        //console.log('Got remote track:', event.streams[0]);
         if (document.querySelector("#video" + remoteEndpointID) == null) {
             createPeerVideo(remoteEndpointID, isPeerContent);
         }
         document.querySelector("#video" + remoteEndpointID).srcObject = event.streams[0];
         document.querySelector("#video" + remoteEndpointID).muted = false;
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 
 function sendStream(peerConnection, stream) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     stream.getTracks().forEach(track => {
         peerConnection.addTrack(track, stream);
     });
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function sendOffer(offer, roomRef, peerId, nameId, isUserContent) {
+    console.log(arguments.callee.name," Fonksiyonun başındayız.");
     const peerOffer = {
         'offer': {
             type: offer.type,
@@ -267,6 +328,7 @@ async function sendOffer(offer, roomRef, peerId, nameId, isUserContent) {
     }
 
     await roomRef.collection(peerId).doc('SDP').collection('offer').doc(nameId).set(peerOffer);
+    console.log(arguments.callee.name," Fonksiyonun sonundayız.");
 }
 
 async function sendAnswer(answer, roomRef, peerId, nameId, isUserContent) {
@@ -288,7 +350,7 @@ async function receiveOffer(peerConnection, roomRef, peerId, nameId) {
         if (snapshot.exists) {
             const data = snapshot.data();
             const offer = data.offer;
-            console.log('Got offer:', offer);
+            //console.log('Got offer:', offer);
             await peerConnection.setRemoteDescription(new RTCSessionDescription(offer));
         }
     });
@@ -327,7 +389,7 @@ function closeConnection(peerConnection, roomRef, peerId) {
 }
 
 async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isPeerContent) {
-    console.log('Create PeerConnection with configuration: ', configuration);
+    //console.log('Create PeerConnection with configuration: ', configuration);
     const peerConnection = new RTCPeerConnection(configuration);
 
     registerPeerConnectionListeners(peerConnection);
@@ -368,7 +430,7 @@ async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isP
 }
 
 async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUserContent) {
-    console.log('Create PeerConnection with configuration: ', configuration)
+    //console.log('Create PeerConnection with configuration: ', configuration)
     const peerConnection = new RTCPeerConnection(configuration);
     registerPeerConnectionListeners(peerConnection);
 
@@ -385,7 +447,7 @@ async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUs
         }
     }
 
-    signalICECandidates(peerConnection, roomRef, peerId, nameId)
+    signalICECandidates(peerConnection, roomRef, peerId, nameId);
 
     if (!isUserContent) {
         receiveStream(peerConnection, peerId, isPeerContent);
@@ -413,7 +475,7 @@ async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUs
 function restartConnection(peerConnection, roomRef, peerId) {
     peerConnection.oniceconnectionstatechange = async function () {
         if (peerConnection.iceConnectionState === "failed") {
-            console.log('Restarting connection with: ' + peerId);
+            //console.log('Restarting connection with: ' + peerId);
             if (peerConnection.restartIce) {
                 peerConnection.restartIce();
             } else {
@@ -430,21 +492,19 @@ function restartConnection(peerConnection, roomRef, peerId) {
 
 function registerPeerConnectionListeners(peerConnection) {
     peerConnection.addEventListener('icegatheringstatechange', () => {
-        console.log(
-            `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+        //console.log( `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
     });
 
     peerConnection.addEventListener('connectionstatechange', () => {
-        console.log(`Connection state change: ${peerConnection.connectionState}`);
+        //console.log(`Connection state change: ${peerConnection.connectionState}`);
     });
 
     peerConnection.addEventListener('signalingstatechange', () => {
-        console.log(`Signaling state change: ${peerConnection.signalingState}`);
+        //console.log(`Signaling state change: ${peerConnection.signalingState}`);
     });
 
     peerConnection.addEventListener('iceconnectionstatechange ', () => {
-        console.log(
-            `ICE connection state change: ${peerConnection.iceConnectionState}`);
+        //console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`);
     });
 }
 
@@ -455,10 +515,10 @@ function requestConnectionToCurrentPeers(roomRef, Id, isContent) {
             const isPeerContent = doc.data().display == 'content';
             if (peerId != nameId && peerId != Id) {
                 if (isPeerContent) {
-                    console.log('Content Identified');
+                    //console.log('Content Identified');
                     document.getElementById('screenShareButton').classList.add('hidden');
                 }
-                console.log('Sending request to: ' + peerId);
+                //console.log('Sending request to: ' + peerId);
                 await peerRequestConnection(peerId, roomRef, Id, isContent, isPeerContent);
             }
         })
@@ -475,14 +535,12 @@ async function createRoom() {
     if (!isHandheld()) {
         document.querySelector('#screenShareButton').classList.remove("hidden");
     }
-    const roomRef = await db.collection('rooms').doc(); 
-    console.log("roomref: ",roomRef);
+    const roomRef = await db.collection('rooms').doc();
+    //console.log("roomref: ", roomRef);
 
     document.querySelector('#shareButton').onclick = () => {
-        window.open(
-            `https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,
-            "_blank"
-        )
+        //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank");
+        window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`,"_blank");
     };
 
     nameId = await addUserToRoom(roomRef);
@@ -510,19 +568,19 @@ function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
     roomRef.collection(nameId).doc('SDP').collection('offer').onSnapshot(async snapshot => {
         await snapshot.docChanges().forEach(async change => {
             if (change.type === 'added') {
-                console.log("Accepting Request from: " + change.doc.id);
+                //console.log("Accepting Request from: " + change.doc.id);
                 let isSenderContent = false;
-                console.log("Display : ");
-                console.log(change.doc.data());
+                //console.log("Display : ");
+                //console.log(change.doc.data());
                 if (change.doc.data().display == 'content') {
-                    console.log('Content Identified');
+                    //console.log('Content Identified');
                     isSenderContent = true;
                     document.getElementById('screenShareButton').classList.add('hidden');
                 }
-                console.log('Is sender content' + isSenderContent);
+                //console.log('Is sender content' + isSenderContent);
                 await peerAcceptConnection(change.doc.id, roomRef, nameId, isSenderContent, isReceiverContent);
             } else {
-                console.log("Mesh has been setup.");
+                //console.log("Mesh has been setup.");
             }
         })
     });
@@ -531,16 +589,14 @@ function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
 async function joinRoomById(roomId) {
     const roomRef = db.collection('rooms').doc(`${roomId}`);
     const roomSnapshot = await roomRef.get();
-    console.log('Got room:', roomSnapshot.exists);
+    //console.log('Got room:', roomSnapshot.exists);
 
     if (roomSnapshot.exists) {
         document.querySelector('#hangupBtn').classList.remove("hidden");
         document.querySelector('#localVideo').addEventListener('click', hideLocalVideo);
         document.querySelector('#shareButton').onclick = () => {
-            window.open(
-                `https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,
-                "_blank"
-            )
+            //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank")
+            window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`,"_blank");
         };
 
         document.querySelector('#shareButton').classList.remove("hidden");
@@ -600,7 +656,7 @@ async function openUserMedia() {
 
     document.querySelector('#localVideo').srcObject = cameraStream;
 
-    console.log('Stream:', document.querySelector('#localVideo').srcObject);
+    //console.log('Stream:', document.querySelector('#localVideo').srcObject);
     document.querySelector('#joinBtn').classList.remove("hidden");
     document.querySelector('#createBtn').classList.remove("hidden");
 }
@@ -624,18 +680,38 @@ function cameraDropdown() {
     menu.open = true;
 }
 
+async function getUserInfo() {
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+            console.log(auth.currentUser);
+            currentUser = auth.currentUser;
+            currentUserID = auth.currentUser.uid;
+        }else{
+            if (params.get('roomId')) {
+                window.location.href = "/"+"?roomId="+params.get('roomId');
+            }
+        }
+    });
+}
+
+
 function init() {
+    firebase.initializeApp(firebaseConfig);
     db = firebase.firestore();
+    auth = firebase.auth();
     if (location.hostname === "localhost") {
-        db.useEmulator("localhost", "8080")
+        db.useEmulator("localhost", "8080");
+        auth.useEmulator("localhost", "9099");
     }
 
     params = new URLSearchParams(location.search);
     roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 
-    openUserMedia()
+    getUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
+    openUserMedia();
+
     if (params.get('roomId')) {
-        console.log('Done');
+        //console.log('Done');
         document.querySelector('#room-id').value = params.get('roomId');
         joinRoom();
     }
@@ -669,6 +745,12 @@ function init() {
     window.addEventListener(eventName, function () {
         document.getElementById('hangupBtn').click();
     });
+
 }
+/*
+$(document).ready(function () {
+    getUserInfo(); //Kullanıcı bilgilerini tanımlamak için
+});
+*/
 
 init();

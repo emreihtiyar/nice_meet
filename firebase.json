@@ -12,18 +12,32 @@
     "rewrites": [
       {
         "source": "**",
-        "destination": "/index.html"
+        "destination": "/login.html"
       }
     ]
   },
   "emulators": {
-    "hosting": {
-      "port": 5000,
-      "host": "0.0.0.0"
-    },
     "firestore": {
-      "port": 5000,
-      "host": "0.0.0.0"
+      "port": "8080"
+    },
+    "ui": {
+      "enabled": false,
+      "port": "4000"
+    },
+    "auth": {
+      "port": "9099"
+    },
+    "functions": {
+      "port": "5002"
+    },
+    "database": {
+      "port": "9000"
+    },
+    "pubsub": {
+      "port": "8085"
+    },
+    "hosting": {
+      "port": "5000"
     }
   }
 }

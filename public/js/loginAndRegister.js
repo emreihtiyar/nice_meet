@@ -9,8 +9,10 @@ const firebaseConfig = {
    measurementId: "G-F840F7K0YQ"
 };
 
+let params;
 var db;
 var auth;
+let roomPage = "room.html"
 
 function register() {
    let name = document.querySelector('#registerName').value;
@@ -60,6 +62,12 @@ function login() {
          console.log("userID:",userId);
 
          //Login tamamlandı, o zaman görüntülü görüşme sayfasına yönlendirelim
+         if (params.get('roomId')) {
+            let roomID = params.get('roomId');
+            window.location.href = "/"+roomPage+"?roomId="+roomID;
+         } else{
+            window.location.href = "/"+roomPage;
+         }
 
       })
       .catch(function (error) {
@@ -98,6 +106,8 @@ function init() {
       //auth.useEmulator("localhost", "9099");
       auth.useEmulator("http://localhost:9099");
    }
+
+   params = new URLSearchParams(location.search);
 
    document.querySelector('#registerBtn').addEventListener('click', register);
    document.querySelector('#loginBtn').addEventListener('click', login);
