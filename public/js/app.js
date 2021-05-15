@@ -40,8 +40,9 @@ let contentShown = false;
 let swipeEventFunction;
 var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
+let roomID1 = null;
 let currentUser = null;
-let currentUserID = null;
+let currentUserInfo = null;
 
 function isHandheld() {
     console.log(arguments.callee.name," Fonksiyonun başındayız.");
@@ -271,13 +272,13 @@ async function addUserToRoom(roomRef) {
     console.log(arguments.callee.name," Fonksiyonun başındayız.");
     
     //let Id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    roomRef.collection('partyList').doc(currentUserID).set({
-        'name': currentUserID,
+    roomRef.collection('partyList').doc(currentUser.uid).set({
+        'name': currentUser.uid,
         'display': 'user'
     });
     
     console.log(arguments.callee.name," Fonksiyonun sonundayız.");
-    return currentUserID;
+    return currentUser.uid;
 }
 
 async function receiveAnswer(peerConnection, roomRef, peerId, nameId) {
@@ -553,7 +554,7 @@ async function createRoom() {
 
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
-
+    roomID1 = roomRef.id;
     document.querySelector('#screenShareButton').addEventListener('click', () => contentToggleButton(roomRef));
 }
 
@@ -687,7 +688,9 @@ async function getUserInfo() {
         if (user) {
             console.log(auth.currentUser);
             currentUser = auth.currentUser;
-            currentUserID = auth.currentUser.uid;
+            db.collection('users').doc(currentUser.uid).get().then(snap => { 
+                currentUserInfo = snap.data();
+            });
         }else{
             if (params.get('roomId')) {
                 window.location.href = "/"+"?roomId="+params.get('roomId');
@@ -695,7 +698,6 @@ async function getUserInfo() {
         }
     });
 }
-
 
 function init() {
     firebase.initializeApp(firebaseConfig);
@@ -749,10 +751,5 @@ function init() {
     });
 
 }
-/*
-$(document).ready(function () {
-    getUserInfo(); //Kullanıcı bilgilerini tanımlamak için
-});
-*/
 
 init();

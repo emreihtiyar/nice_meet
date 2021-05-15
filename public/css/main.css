@@ -233,3 +233,36 @@ body {
 .mdc-menu-surface--anchor {
     width: 13vw;
 }
+/*!-----------------------------ALdığım kodaki değişiklikler---------------------------------------*/
+.video-box{
+    float: left;
+}
+
+/*!--------------------------------------------------------------------*/
+.chat-bar {
+    background: lightgrey;
+    width: 200px;
+    height: 95%;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: inline-block;
+    visibility: visible;
+}
+
+.messageBubble{
+    align-self: center;
+    margin: 5px;
+    background: lawngreen;
+    width: 90%;
+    height: 40px;
+    border: 2px thin lightsalmon;
+}
+
+.messageSender{
+    text-align: center;
+}
+
+.messageText{
+    text-align: center;
+}

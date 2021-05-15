@@ -177,3 +177,37 @@ function showLocalVideo() {
     localVideoElem.classList.remove('relaxedHidden');
     document.getElementById('localVideoShowButton').classList.add('hidden'); 
 }
+
+function messagesBar() {
+    console.log("Messages Bar");
+}
+
+function addMessageBubble(senderName, message, date) {
+    /* 
+        <div class="messageBubble">
+            <span class="messageSender"> Ahmet: </span> </br>
+            <span class="messageText">Mesaj</span>
+            <span class="messageTime">Zaman</span>
+            </div>
+    */
+
+    let bubbleElement = document.createElement("div");
+    let senderElement = document.createElement("span");
+    let messageElement = document.createElement("span");
+    let timeElement = document.createElement("span");
+
+    bubbleElement.classList.add("messageBubble");
+    senderElement.classList.add("messageSender");
+    messageElement.classList.add("messageText");
+    timeElement.classList.add("messageTime");
+
+    senderElement.innerHTML = senderName;
+    messageElement.innerHTML = message;
+    timeElement.innerHTML = date.getHours().toString()+":"+date.getMinutes().toString();
+
+    bubbleElement.appendChild(senderElement);
+    bubbleElement.appendChild(messageElement);
+    bubbleElement.appendChild(timeElement);
+
+    document.getElementById("chat-bar").appendChild(bubbleElement);
+}
