@@ -2,7 +2,11 @@ let chatRoomRef; //Odanın içindeki chat collection'ının referansını tutar
 
 let messagesAll;
 
-async function incomingMessageListener(){
+async function incomingMessageListener(roomID){
+    if (chatRoomRef == null && chatRoomRef == undefined) {
+        getChatRoomRef(roomID);
+    }
+
     messagesAll = [];
     chatRoomRef.orderBy("datetime","asc").onSnapshot(async snapshot => {
         snapshot.docChanges().forEach(change => {//doküman değişikliğinde her br değişiklik için çağırılır.
@@ -23,8 +27,15 @@ async function createChatRoom(roomID) {
     console.log("ChatRoomRef",chatRoomRef);
 }
 
-async function sendMessage(message) {
+async function getChatRoomRef(roomID) {
+    chatRoomRef = db.collection('rooms').doc(`${roomID}`).collection('chat'); 
+    console.log("ChatRoomRef",chatRoomRef);
+}
 
+async function sendMessage(message) {
+    if (chatRoomRef == null && chatRoomRef == undefined) {
+        console.log("ChatRoomRef is Undefined, chatRoomRef:", chatRoomRef);
+    }
     chatRoomRef.add({
         "sender":currentUserInfo.username,
         "message":message,
@@ -38,11 +49,13 @@ async function sendMessage(message) {
     });
 }
 
-function init() {
-
-    if (location.hostname === "localhost") {
-        db.useEmulator("http://localhost:9099");
+function sendMessageOnClick(event) {
+    let message = document.getElementById("messageTextBox").value;
+    console.log("sendMessageOnClick: ",message);
+    if (message != "" && message != null && message != undefined) {
+        sendMessage(message);
+        document.getElementById("messageTextBox").value = "";
+    }else{
+        console.log("Boş Mesaj gönderilmez ");
     }
 }
-
-init();

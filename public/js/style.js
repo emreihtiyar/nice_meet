@@ -53,7 +53,6 @@ function enforceLayout(numberOfDisplayedPeers) {
     }
 }
 
-
 function gridLayout(numberOfDisplayedPeers) {
     document.querySelectorAll('.video-box').forEach(elem => {
         if (!elem.classList.contains('contentContainer')) {
@@ -178,19 +177,7 @@ function showLocalVideo() {
     document.getElementById('localVideoShowButton').classList.add('hidden'); 
 }
 
-function messagesBar() {
-    console.log("Messages Bar");
-}
-
 function addMessageBubble(senderName, message, date) {
-    /* 
-        <div class="messageBubble">
-            <span class="messageSender"> Ahmet: </span> </br>
-            <span class="messageText">Mesaj</span>
-            <span class="messageTime">Zaman</span>
-            </div>
-    */
-
     let bubbleElement = document.createElement("div");
     let senderElement = document.createElement("span");
     let messageElement = document.createElement("span");

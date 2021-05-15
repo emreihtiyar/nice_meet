@@ -35,7 +35,7 @@
         <button class="material-icons btn-circle hidden" id="screenShareButton">screen_share</button>
         <button class="material-icons btn-circle hidden" id="localVideoShowButton">visibility</button>
         <button class="material-icons btn-circle" id="appFullscreenButton">fullscreen</button>
-        <button class="material-icons btn-circle" id="messagesButton">message</button>
+        <button class="material-icons btn-circle" id="chatButton">message</button>
         <div id="deviceDropdown">
             <!--<button class="mdc-button" id="cameraOptions"><span class="mdc-button__label">Camera</span</button>-->
             <button class="material-icons btn-circle" id="cameraOptions">arrow_drop_up</button>
@@ -67,11 +67,10 @@
         </div>
     </div>
     <div id="chat-bar" class="chat-bar">
-        <div class="messageBubble">
-            <span class="messageSender"> Ahmet: </span>
-            <span class="messageText">Mesaj</span> 
-            <span class="messageTime">Zaman</span>
-        </div>
+        <span>
+            <input id="messageTextBox" type="text" placeholder="Mesajınızı giriniz">
+            <button class="material-icons btn-square" id="messageSendButton" onclick="sendMessageOnClick()">send</button>
+        </span>
     </div>
     <div class="mdc-dialog" id="room-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
         aria-describedby="my-dialog-content">
