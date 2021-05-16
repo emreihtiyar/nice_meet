@@ -83,7 +83,6 @@ function toggleOnContent(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
-
 function signalContentShare(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     //TODO: rasgeleID ve  display:'content' burada atanıyor ancak bu rasgeleyi userid yaparsam bu sefer aynı adda olan ve display:'user' olan silinecek buda kamera content bilgisini siler
