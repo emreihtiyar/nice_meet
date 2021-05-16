@@ -267,3 +267,29 @@ body {
     text-align: center;
 }
 
+/*! USERS BAR AND USERS*/
+.users-bar {
+    background: lightslategray;
+    width: 200px;
+    height: 40%;
+    position: absolute;
+    top: 60%;
+    right: 20px;
+    visibility: visible;
+}
+
+.userInfoBubble{
+    margin: 4px;
+    padding: 2px;
+    align-items: start;
+    background-color: lime;
+}
+.userInfoUsername{
+    padding: 3px;
+}
+.userInfoIcon{
+    margin: 5px;
+    align-self: flex-end;
+    height: 8px;
+    width: 8px;
+}

@@ -12,8 +12,8 @@ async function incomingMessageListener(roomID){
         snapshot.docChanges().forEach(change => {//doküman değişikliğinde her br değişiklik için çağırılır.
             if (change.type === 'added') {
                 let messageData = change.doc.data();
-                console.log("Değişiklik oldu");
-                console.log("change.doc.data():",messageData);
+                console.log("Chat için Değişiklik oldu");
+                console.log("Chat -> change.doc.data():",messageData);
                 messagesAll.push(change.doc);
                 addMessageBubble(messageData.sender, messageData.message, messageData.datetime.toDate());
             }

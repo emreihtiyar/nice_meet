@@ -1,0 +1,32 @@
+async function getUserInfoByUID(uid) {
+    let userInfo;
+    console.log("getUserInfoByUID, userInfo: ", userInfo);
+    if (uid != null && uid != undefined && uid !="") {
+        db.collection('users').doc(uid).get().then(snap => {
+            console.log(snap.data());
+            userInfo = snap.data();
+        });
+    }
+    return userInfo;
+}
+
+async function partyListListener(roomRef) {
+    roomRef.collection("partyList").onSnapshot(async snapshot => {
+        snapshot.docChanges().forEach(change => {//doküman değişikliğinde her br değişiklik için çağırılır.
+            if (change.type === 'added') {
+                /* Kullanıncı katıldı*/
+                let user = change.doc.data();
+                console.log("partyList için Değişiklik oldu");
+                console.log("partyList -> change.doc.data():",user);
+                addUserBubble(user.name, "username", false, false, false);
+            }
+            if (change.type === 'removed') {
+                /* Kullanıncı Ayrıldı*/
+                deleteUserBubble(user.name);
+            }
+            if (change.type === 'modified') {
+                /* Kullanıncı ile ilgili bilgi değişti*/
+            }
+        });
+    })
+}

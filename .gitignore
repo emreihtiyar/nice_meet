@@ -74,3 +74,4 @@ package-lock.json
 package.json
 .firebaserc
 firebase.json
+public/messages.html

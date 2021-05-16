@@ -556,6 +556,9 @@ async function createRoom() {
     createChatRoom(roomID);
     incomingMessageListener();
 
+    /*Odaya girenleri kontrol etmek için  */
+    partyListListener(roomRef);
+
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
     document.querySelector('#screenShareButton').addEventListener('click', () => contentToggleButton(roomRef));
@@ -690,7 +693,7 @@ function cameraDropdown() {
     menu.open = true;
 }
 
-async function getUserInfo() {
+async function getCurrentUserInfo() {
     firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
             console.log(auth.currentUser);
@@ -718,7 +721,7 @@ function init() {
     params = new URLSearchParams(location.search);
     roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 
-    getUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
+    getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
     openUserMedia();
 
     if (params.get('roomId')) {

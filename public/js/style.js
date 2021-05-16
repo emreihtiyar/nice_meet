@@ -198,3 +198,61 @@ function addMessageBubble(senderName, message, date) {
 
     document.getElementById("chat-bar").appendChild(bubbleElement);
 }
+
+function addUserBubble(uid,username, isContent, isMuted, isCameraOff) {
+    let bubbleElement = document.createElement("div");
+    let usernameElement = document.createElement("span");
+    let cameraIcon = document.createElement("span");
+    let micIcon = document.createElement("span");
+    let screenShareIcon = document.createElement("span");
+
+    bubbleElement.id = uid;
+    
+    bubbleElement.classList.add("userInfoBubble");
+    usernameElement.classList = "userInfoUsername";
+    cameraIcon.classList = "material-icons userInfoIcon";
+    micIcon.classList = "material-icons userInfoIcon";
+    screenShareIcon.classList = "material-icons userInfoIcon";
+
+    if (isCameraOff) {
+        cameraIcon.innerHTML = "videocam_off";
+    }
+    else{
+        cameraIcon.innerHTML = "videocam";
+    }
+
+    if (isMuted) {
+        micIcon.innerHTML = "mic_off";
+    } else {
+        micIcon.innerHTML = "mic";
+    }
+
+    if (isContent) {
+        screenShareIcon.innerHTML = "screen_share";
+    }
+
+    usernameElement.innerHTML = username;
+
+    bubbleElement.appendChild(usernameElement);
+    bubbleElement.appendChild(cameraIcon);
+    bubbleElement.appendChild(micIcon);
+    bubbleElement.appendChild(screenShareIcon);
+
+    document.getElementById("users-bar").appendChild(bubbleElement);
+}
+
+function deleteUserBubble(uid) {
+    let bubbleElement = document.getElementById(uid);
+    if (bubbleElement != null && bubbleElement != undefined) {
+        bubbleElement.remove();
+    }
+}
+
+function changeUserBubbleDetails(uid, isContent, isMuted, isCameraOff) {
+    let bubbleElement = document.getElementById(uid);
+    if (bubbleElement == null || bubbleElement == undefined) {
+        console.log("Böyle Bir Kullanıcı baloncuğu bulunamadı.");
+        return undefined;
+    }
+    
+}
