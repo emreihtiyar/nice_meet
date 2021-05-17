@@ -23,22 +23,24 @@ function userJoined(user) {
 async function partyListListener(roomRef) {
     roomRef.collection("partyList").onSnapshot(async snapshot => {
         snapshot.docChanges().forEach(change => {//doküman değişikliğinde her br değişiklik için çağırılır.
+            let user = change.doc.data();
             if (change.type === 'added') {
                 /* Kullanıncı katıldı*/
-                let user = change.doc.data();
                 console.log("partyList için Değişiklik oldu");
                 console.log("partyList -> change.doc.data():",user);
                 addUserBubble(user.name, user.username, user.display, user.muteState, user.videoState);
             }
             if (change.type === 'removed') {
                 /* Kullanıncı Ayrıldı*/
-                let user = change.doc.data();
                 console.log("partyList için Değişiklik oldu");
                 console.log("partyList -> change.doc.data():",user);
                 deleteUserBubble(user.name);
             }
             if (change.type === 'modified') {
                 /* Kullanıncı ile ilgili bilgi değişti*/
+                console.log("partyList için Değişiklik oldu");
+                console.log("partyList -> change.doc.data():",user);
+                changeUserBubbleDetails(user.name, user.muteState, user.videoState);
             }
         });
     })

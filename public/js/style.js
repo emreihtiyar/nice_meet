@@ -208,11 +208,11 @@ function addUserBubble(uid,username, displayInfo, muteState, cameraState) {
 
     bubbleElement.id = uid;
     
-    bubbleElement.classList.add("userInfoBubble");
-    usernameElement.classList = "userInfoUsername";
-    cameraIcon.classList = "material-icons userInfoIcon";
-    micIcon.classList = "material-icons userInfoIcon";
-    screenShareIcon.classList = "material-icons userInfoIcon";
+    bubbleElement.classList.add("user-info-bubble");
+    usernameElement.classList = "user-info-username";
+    cameraIcon.classList = "material-icons user-info-icon camera-icon";
+    micIcon.classList = "material-icons user-info-icon mic-icon";
+    screenShareIcon.classList = "material-icons user-info-icon content-icon";
 
     if (cameraState) {
         cameraIcon.innerHTML = "videocam";
@@ -228,8 +228,8 @@ function addUserBubble(uid,username, displayInfo, muteState, cameraState) {
     }
 
     if (displayInfo === "content") {
-        cameraIcon.visibility.style.visibility = "hidden"
-        micIcon.visibility.style.visibility = "hidden"
+        cameraIcon.style.visibility = "hidden"
+        micIcon.style.visibility = "hidden"
         screenShareIcon.innerHTML = "screen_share";
     }
 
@@ -250,11 +250,25 @@ function deleteUserBubble(uid) {
     }
 }
 
-function changeUserBubbleDetails(uid, isContent, isMuted, isCameraOff) {
+function changeUserBubbleDetails(uid, muteState, cameraState) { //document.querySelector('#div1 #demo').innerHTML = "Hello World!";
     let bubbleElement = document.getElementById(uid);
+    let cameraIcon = document.querySelector(`#${uid} .camera-icon`);
+    let micIcon = document.querySelector(`#${uid} .mic-icon`);
+
     if (bubbleElement == null || bubbleElement == undefined) {
         console.log("Böyle Bir Kullanıcı baloncuğu bulunamadı.");
         return undefined;
     }
-    
+    if (cameraState) {
+        cameraIcon.innerHTML = "videocam";
+    }
+    else{
+        cameraIcon.innerHTML = "videocam_off";
+    }
+
+    if (muteState) {
+        micIcon.innerHTML = "mic_off";
+    } else {
+        micIcon.innerHTML = "mic";
+    }
 }

@@ -38,6 +38,7 @@ let screenState = false;
 
 let cameraStream = null;
 let captureStream = null;
+
 let contentExists = false;
 let contentShown = false;
 let swipeEventFunction;
@@ -548,7 +549,7 @@ async function createRoom() {
         document.querySelector('#screenShareButton').classList.remove("hidden");
     }
     const roomRef = await db.collection('rooms').doc();
-    console.log("roomref: ", roomRef);
+    console.log("roomRef: ", roomRef);
 
     document.querySelector('#shareButton').onclick = () => {
         //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank");
@@ -565,8 +566,10 @@ async function createRoom() {
     createChatRoom(roomID);
     incomingMessageListener();
 
-    /*Odaya girenleri kontrol etmek için  */
+    /*Odaya girenleri kontrol etmek için veya kamera, mikrofon ve içerik bilgilerini firebase'de değiştirmek için  */
     partyListListener(roomRef);
+    mutingStateChangeInFirebase(roomRef);
+    videoStateChangeInFirebase(roomRef);
 
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
@@ -637,8 +640,10 @@ async function joinRoomById(roomId) {
         roomID = roomRef.id;
         incomingMessageListener(roomID);
 
-        /*Odaya girenleri kontrol etmek için  */
+        /*Odaya girenleri kontrol etmek için veya kamera, mikrofon ve içerik bilgilerini firebase'de değiştirmek için  */
         partyListListener(roomRef);
+        mutingStateChangeInFirebase(roomRef);
+        videoStateChangeInFirebase(roomRef);
 
         signalHangup(roomRef);
 
@@ -718,6 +723,21 @@ async function getCurrentUserInfo() {
                 window.location.href = "/" + "?roomId=" + params.get('roomId');
             }
         }
+    });
+}
+
+function mutingStateChangeInFirebase(roomRef) {
+    document.querySelector('#muteButton').addEventListener('click', () => {
+        roomRef.collection('partyList').doc(currentUser.uid).update({
+            'muteState': muteState
+        });
+    });
+}
+function videoStateChangeInFirebase(roomRef) {
+    document.querySelector('#videoButton').addEventListener('click', () => {
+        roomRef.collection('partyList').doc(currentUser.uid).update({
+            'videoState': videoState
+        });
     });
 }
 
