@@ -27,12 +27,15 @@ const configuration = {
 //! roomRef -> rooms/FAh3XJDyZxVxGhA8k23i rooms/oda id'sini tutuyor ve bunu bir documannReference olarak tutar.
 
 let roomDialog = null;
+
 let nameId = null;
 let contentId = null;
+
 let muteState = false;
 let videoState = true;
 var contentState = false;
 let screenState = false;
+
 let cameraStream = null;
 let captureStream = null;
 let contentExists = false;
@@ -87,13 +90,17 @@ function signalContentShare(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     //TODO: rasgeleID ve  display:'content' burada atanıyor ancak bu rasgeleyi userid yaparsam bu sefer aynı adda olan ve display:'user' olan silinecek buda kamera content bilgisini siler
     contentId = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    doc = roomRef.collection('partyList').doc(contentId).set({
+    doc = roomRef.collection('partyList').doc(contentId);
+    doc.set({
         "name": contentId,
-        "display": "content"
+        "username":currentUserInfo.username,
+        "display": "content",
+        "muteState":muteState,
+        "videoState":videoState
     });
     requestConnectionToCurrentPeers(roomRef, contentId, true);
     acceptConnectionsFromJoiningPeers(roomRef, contentId, true);
-    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız. doc=");
 }
 
 async function contentToggleButton(roomRef) {
@@ -273,7 +280,10 @@ async function addUserToRoom(roomRef) {
     //let Id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     roomRef.collection('partyList').doc(currentUser.uid).set({
         'name': currentUser.uid,
-        'display': 'user'
+        "username":currentUserInfo.username,
+        'display': 'user',
+        "muteState":muteState,
+        "videoState":videoState
     });
 
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
@@ -626,6 +636,9 @@ async function joinRoomById(roomId) {
         /*Create Chat Room and Listen chat rooms changes */
         roomID = roomRef.id;
         incomingMessageListener(roomID);
+
+        /*Odaya girenleri kontrol etmek için  */
+        partyListListener(roomRef);
 
         signalHangup(roomRef);
 

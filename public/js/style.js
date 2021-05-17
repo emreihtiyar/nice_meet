@@ -199,7 +199,7 @@ function addMessageBubble(senderName, message, date) {
     document.getElementById("chat-bar").appendChild(bubbleElement);
 }
 
-function addUserBubble(uid,username, isContent, isMuted, isCameraOff) {
+function addUserBubble(uid,username, displayInfo, muteState, cameraState) {
     let bubbleElement = document.createElement("div");
     let usernameElement = document.createElement("span");
     let cameraIcon = document.createElement("span");
@@ -214,20 +214,22 @@ function addUserBubble(uid,username, isContent, isMuted, isCameraOff) {
     micIcon.classList = "material-icons userInfoIcon";
     screenShareIcon.classList = "material-icons userInfoIcon";
 
-    if (isCameraOff) {
-        cameraIcon.innerHTML = "videocam_off";
-    }
-    else{
+    if (cameraState) {
         cameraIcon.innerHTML = "videocam";
     }
+    else{
+        cameraIcon.innerHTML = "videocam_off";
+    }
 
-    if (isMuted) {
+    if (muteState) {
         micIcon.innerHTML = "mic_off";
     } else {
         micIcon.innerHTML = "mic";
     }
 
-    if (isContent) {
+    if (displayInfo === "content") {
+        cameraIcon.visibility.style.visibility = "hidden"
+        micIcon.visibility.style.visibility = "hidden"
         screenShareIcon.innerHTML = "screen_share";
     }
 

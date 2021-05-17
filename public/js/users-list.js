@@ -28,7 +28,7 @@ async function partyListListener(roomRef) {
                 let user = change.doc.data();
                 console.log("partyList için Değişiklik oldu");
                 console.log("partyList -> change.doc.data():",user);
-                addUserBubble(user.name, "username", false, false, false);
+                addUserBubble(user.name, user.username, user.display, user.muteState, user.videoState);
             }
             if (change.type === 'removed') {
                 /* Kullanıncı Ayrıldı*/
