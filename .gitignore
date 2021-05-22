@@ -65,10 +65,9 @@ node_modules/
 .env
 
 .idea
-
-
-old/
-public/old/
+public\old
+public/old
+public/old/*
 js/app_test.js
 package-lock.json
 package.json
