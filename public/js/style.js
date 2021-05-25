@@ -1,11 +1,14 @@
 let numberOfDisplayedPeers = 0;
 
+let chatBarIsOpen = false;
+let usersBarIsOpen = false;
+
 function enforceLayout(numberOfDisplayedPeers) {
-    if (!contentExists) {
+    if (!isContentExists) {
         gridLayout(numberOfDisplayedPeers);
     } else {
         if (isHandheld()) {
-            contentShown = true;
+            isContentShown = true;
             document.getElementById('videos').setAttribute('class', '');
             document.getElementById('videos').classList.add('single_cell');
             document.getElementsByClassName('contentContainer')[0].classList.remove('hidden');
@@ -88,12 +91,12 @@ function gridLayout(numberOfDisplayedPeers) {
 }
 
 function swipeContent() {
-    if (contentShown) {
-        contentShown = false;
+    if (isContentShown) {
+        isContentShown = false;
         document.getElementsByClassName('contentContainer')[0].classList.add('hidden');
         gridLayout(numberOfDisplayedPeers - 1);
     } else {
-        contentShown = true;
+        isContentShown = true;
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('single_cell');
         document.getElementsByClassName('contentContainer')[0].classList.remove('hidden');
@@ -116,8 +119,8 @@ function createPeerVideo(peerId, isPeerContent) {
     peerNode.classList.remove('relaxedHidden');
     if (isPeerContent) {
         let inFullscreen = false;
-        contentShown = true;
-        contentExists = true;
+        isContentShown = true;
+        isContentExists = true;
         peerNode.classList.add('contentContainer');
         peerNode.addEventListener('click', () => {
             if (inFullscreen) {
@@ -177,16 +180,17 @@ function showLocalVideo() {
     document.getElementById('localVideoShowButton').classList.add('hidden'); 
 }
 
+//! Bu kısımdan sonrası benim yazımım
 function addMessageBubble(senderName, message, date) {
     let bubbleElement = document.createElement("div");
     let senderElement = document.createElement("span");
     let messageElement = document.createElement("span");
     let timeElement = document.createElement("span");
 
-    bubbleElement.classList.add("messageBubble");
-    senderElement.classList.add("messageSender");
-    messageElement.classList.add("messageText");
-    timeElement.classList.add("messageTime");
+    bubbleElement.classList.add("message-bubble");
+    senderElement.classList.add("message-sender");
+    messageElement.classList.add("message-text");
+    timeElement.classList.add("message-time");
 
     senderElement.innerHTML = senderName;
     messageElement.innerHTML = message;
@@ -208,11 +212,11 @@ function addUserBubble(uid,username, displayInfo, muteState, cameraState) {
 
     bubbleElement.id = uid;
     
-    bubbleElement.classList.add("user-info-bubble");
+    bubbleElement.classList = "user-bubble";
     usernameElement.classList = "user-info-username";
-    cameraIcon.classList = "material-icons user-info-icon camera-icon";
-    micIcon.classList = "material-icons user-info-icon mic-icon";
-    screenShareIcon.classList = "material-icons user-info-icon content-icon";
+    cameraIcon.classList = "material-icons camera-icon";
+    micIcon.classList = "material-icons mic-icon";
+    screenShareIcon.classList = "material-icons cast-icon";
 
     if (cameraState) {
         cameraIcon.innerHTML = "videocam";
@@ -220,13 +224,11 @@ function addUserBubble(uid,username, displayInfo, muteState, cameraState) {
     else{
         cameraIcon.innerHTML = "videocam_off";
     }
-
     if (muteState) {
         micIcon.innerHTML = "mic_off";
     } else {
         micIcon.innerHTML = "mic";
     }
-
     if (displayInfo === "content") {
         cameraIcon.style.visibility = "hidden"
         micIcon.style.visibility = "hidden"
@@ -252,23 +254,252 @@ function deleteUserBubble(uid) {
 
 function changeUserBubbleDetails(uid, muteState, cameraState) { //document.querySelector('#div1 #demo').innerHTML = "Hello World!";
     let bubbleElement = document.getElementById(uid);
-    let cameraIcon = document.querySelector(`#${uid} .camera-icon`);
-    let micIcon = document.querySelector(`#${uid} .mic-icon`);
+
+    let cameraIcon;
+    let micIcon;
+
+    bubbleElement.childNodes.forEach(function (child) {  
+        if (child != undefined && child != null && child.childNodes != null) {
+            if (child.classList.contains("camera-icon")) {
+                cameraIcon = child;
+            }else if (child.classList.contains("mic-icon")) {
+                micIcon= child;
+            }
+        }
+    });
 
     if (bubbleElement == null || bubbleElement == undefined) {
         console.log("Böyle Bir Kullanıcı baloncuğu bulunamadı.");
         return undefined;
     }
+
     if (cameraState) {
         cameraIcon.innerHTML = "videocam";
     }
     else{
         cameraIcon.innerHTML = "videocam_off";
     }
-
     if (muteState) {
         micIcon.innerHTML = "mic_off";
     } else {
         micIcon.innerHTML = "mic";
     }
 }
+
+function mouseMoveListener() {
+        document.getElementById("button-container").style.display = "block";
+        setTimeout(event => {
+            console.log("Buton bar Hidding");
+            document.getElementById("button-container").style.display = "none";
+        },5000);
+}
+
+function chatBtnListener() {
+    if (chatBarIsOpen) {
+        document.getElementById("chat-bar").style.display = "none";
+        document.getElementById("bars-container").style.display = "none";
+        chatBarIsOpen = false;
+    }else{
+        if (usersBarIsOpen) {
+            document.getElementById("users-bar").style.display = "none";
+            usersBarIsOpen = false;
+        }
+        document.getElementById("chat-bar").style.display = "block";
+        document.getElementById("bars-container").style.display = "block";
+        chatBarIsOpen = true;
+    }
+}
+
+function usersBtnListener() {
+    if (usersBarIsOpen) {
+        document.getElementById("users-bar").style.display = "none";
+        document.getElementById("bars-container").style.display = "none";
+        usersBarIsOpen = false;
+    }else{
+        if (chatBarIsOpen) {
+            document.getElementById("chat-bar").style.display = "none";
+            chatBarIsOpen = false;
+        }
+        document.getElementById("users-bar").style.display = "block";
+        document.getElementById("bars-container").style.display = "block";
+        usersBarIsOpen = true;
+    }
+}
+
+function setAllListeners() {
+    document.getElementById("chat-btn").onclick = chatBtnListener;
+    document.getElementById("users-btn").onclick = usersBtnListener;
+    //document.getElementById("main-container").onmousemove = mouseMoveListener; 
+}
+
+setAllListeners();
+
+
+/*----------------------------- */
+
+//TODO: >swipeOnlyContent< fonksiyonu çalıştığında sonra bir tane user-video kalıyor nedenini alamadım, ikinci kez çalıştığında kalanda gidiyor
+function swipeOnlyContent() {
+    let videoContainer = document.getElementById("video-container");
+    videoContainer.childNodes.forEach(child => { 
+        if (child.classList != undefined && child.classList.contains("user-video")) {
+            videoContainer.removeChild(child);
+        }
+    });
+    videoContainer.classList = "video-container video-container-only-content";
+}
+
+function swipeContentAndUsers() {
+    let videoContainer = document.getElementById("video-container");
+    videoContainer.classList = "video-container video-container-content";
+}
+
+function swipeOnlyUsers() {
+    let videoContainer = document.getElementById("video-container");
+    videoContainer.childNodes.forEach((child) => { 
+        if (child.classList != undefined && child.classList.contains("content-video")) {
+            videoContainer.removeChild(child);
+        }
+    });
+    enforceGridLayout(numberOfDisplayedPeers);
+}
+
+function addPeerVideo(peerID, videoSource){
+    let videoContainer = document.getElementById("video-container");
+    let userVideo = document.createElement("div");
+    let videoElement = document.createElement("video");
+
+    userVideo.classList.add("user-video");
+    videoElement.id = "video"+`${peerID}`;
+    if (videoSource == null || videoSource == undefined) {
+        videoElement.src = "videos/sample_640x360.webm"
+    } else {
+        videoElement.srcObject = videoSource;
+    }
+
+    userVideo.appendChild(videoElement);
+    videoContainer.appendChild(userVideo);
+}
+
+function addContentVideo(contentSource) {
+    if (document.getElementById("content-video") != undefined) {
+        return false;
+    }
+    isContentExists = true;
+
+    let videoContainer = document.getElementById("video-container");
+    let contentVideo = document.createElement("div");
+    let videoElement = document.createElement("video");
+
+    contentVideo.classList.add("content-video");
+    videoElement.id = "content-video";
+
+    if (contentSource == null || contentSource == undefined) {
+        videoElement.src = "videos/sample_640x360.webm"
+    } else {
+        videoElement.srcObject = videoSource;
+    }
+    contentVideo.appendChild(videoElement);
+    videoContainer.appendChild(contentVideo);
+}
+
+function enforceGridLayout(numberOfDisplayedPeers) {
+    /*document.querySelectorAll('.video-box').forEach(elem => {
+        if (!elem.classList.contains('contentContainer')) {
+            elem.classList.remove('hidden');
+        }
+    });*/
+
+    let videoContainer = document.getElementById("video-container");
+
+    if (isContentExists) {
+        videoContainer.classList = "video-container video-container-content";
+        return false;
+    }
+
+    if (numberOfDisplayedPeers == 1) {
+        videoContainer.classList = "video-container video-container-1-row video-container-1-col";
+    } else if (numberOfDisplayedPeers == 2) {
+        videoContainer.classList = "video-container video-container-1-row video-container-2-col";
+    } else if (numberOfDisplayedPeers > 2 && numberOfDisplayedPeers <= 4) {
+        videoContainer.classList = "video-container video-container-2-row video-container-2-col";
+    } else if (numberOfDisplayedPeers > 4 && numberOfDisplayedPeers <= 6) {
+        videoContainer.classList = "video-container video-container-2-row video-container-3-col";
+    } else if (numberOfDisplayedPeers > 6 && numberOfDisplayedPeers <= 9) {
+        videoContainer.classList = "video-container video-container-3-row video-container-3-col";
+    } else if (numberOfDisplayedPeers > 9 && numberOfDisplayedPeers <= 12) {
+        videoContainer.classList = "video-container video-container-3-row video-container-4-col";
+    } else if (numberOfDisplayedPeers > 12 && numberOfDisplayedPeers <= 16) {
+        videoContainer.classList = "video-container video-container-4-row video-container-4-col";
+    } else {
+        videoContainer.classList = "video-container video-container-1-row video-container-1-col";
+    }
+}
+
+function enforceLayout_(numberOfDisplayedPeers) {
+    if (!isContentExists) {
+        enforceGridLayout(numberOfDisplayedPeers);
+    } else {
+        if (isHandheld()) {
+
+            isContentShown = true;
+            let videoContainer = document.getElementById("video-container");
+
+            videoContainer.classList = "video-container video-container-1-row video-container-1-col";
+        } else {
+            videoContainer.classList = "video-container video-container-4-row video-container-4-col";
+        }
+    }
+}
+/*
+            isContentShown = true;
+            document.getElementById('videos').setAttribute('class', '');
+            document.getElementById('videos').classList.add('single_cell');
+            document.getElementsByClassName('contentContainer')[0].classList.remove('hidden');
+            document.querySelectorAll('.video-box').forEach(elem => {
+                if (!elem.classList.contains('contentContainer')) {
+                    elem.classList.add('hidden');
+                }
+            });
+            
+            let swipeDone = false;
+            let lastY = 120;
+            let lastX = 120;
+            let currentX = 120;
+            var currentY = 120;
+
+            var touchInitiation = (e) => {
+                lastX = e.touches[0].clientX;
+                lastY = e.touches[0].clientY;
+            }
+
+            var detectSwipe = (e) => {
+                currentY = e.touches[0].clientY;
+                currentX = e.touches[0].clientX;
+                swipeDone = true;
+            }
+
+            document.removeEventListener('touchend', swipeEventFunction);
+            swipeEventFunction = function () {
+                if (swipeDone && Math.abs(lastX - currentX) > 50 && Math.abs(lastY - currentY) < 50) {
+                    swipeDone = false;
+                    swipeContent();
+                }
+                console.log('currentY ' + currentY + 'Last Y ' + lastY);
+                console.log('currentX ' + currentX + 'Last X ' + lastX);
+            }
+
+            document.addEventListener('touchstart', (e) => touchInitiation(e), false);
+            document.addEventListener('touchmove', (e) => detectSwipe(e), false);
+            document.addEventListener('touchend', swipeEventFunction, false);
+        } else {
+            document.getElementById('videos').setAttribute('class', '');
+            document.getElementById('videos').classList.add('sixteen_cell');
+            document.getElementById('localVideoContainer').classList.remove('sideLocalVideo');
+        }
+    }
+
+
+
+
+
+    */

@@ -22,6 +22,7 @@
     <!--<script defer src="/__/firebase/init.js"></script>-->
 
     <link rel="stylesheet" type="text/css" href="css/main.css">
+    <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
@@ -35,7 +36,8 @@
         <button class="material-icons btn-circle hidden" id="screenShareButton">screen_share</button>
         <button class="material-icons btn-circle hidden" id="localVideoShowButton">visibility</button>
         <button class="material-icons btn-circle" id="appFullscreenButton">fullscreen</button>
-        <button class="material-icons btn-circle" id="chatButton">message</button>
+        <button class="material-icons btn-circle" id="chat-btn">message</button>
+        <button class="material-icons btn-circle" id="users-btn">group</button>
         <div id="deviceDropdown">
             <!--<button class="mdc-button" id="cameraOptions"><span class="mdc-button__label">Camera</span</button>-->
             <button class="material-icons btn-circle" id="cameraOptions">arrow_drop_up</button>
@@ -66,21 +68,32 @@
             <video id="localVideo" muted autoplay playsinline></video>
         </div>
     </div>
-    <div id="chat-bar" class="chat-bar">
-        <span>
-            <input id="messageTextBox" type="text" placeholder="Mesajınızı giriniz">
-            <button class="material-icons btn-square" id="messageSendButton"
-                onclick="sendMessageOnClick()">send</button>
-        </span>
-    </div>
-    <div id="users-bar" class="users-bar">
-        <!-- Kullanıcılar listelenmsinde kısım
-        <div class="userInfoBubble">
-            <span class="userInfoUsername">Username</span>
-            <span class="material-icons userInfoIcon">videocam</span>
-            <span class="material-icons userInfoIcon">mic</span>
-            <span class="material-icons userInfoIcon">screen_share</span>
-        </div> -->
+    <div id="bars-container" class="bars-container">
+        <div id="chat-bar" class="chat-bar">
+            <div class="chat">
+                <!--
+                    <div class="message-bubble">
+                        <span class="message-sender">Emre İHTİYAR</span>
+                        <span class="message-time">12:24</span>
+                        <span class="message-text">Merhaba, bu bir deneme mesajıdır.</span>
+                    </div>
+                -->
+            </div>
+            <div id="message-input-block" class="message-input-block">
+                <button id="message-send-btn" type="button" class="material-icons btn-send-message">send</button>
+                <input id="message-send-text" type="text" class="form-field" placeholder="Message" />
+            </div>
+        </div>
+        <div id="users-bar" class="users-bar">
+            <!--
+                <div class="user-bubble">
+                    <span class="user-info-username">Emre İHTİYAR</span>
+                    <span class="material-icons camera-icon" alt="camera info">videocam</span>
+                    <span class="material-icons mic-icon" alt="mic info">mic</span>
+                    <span class="material-icons cast-icon" alt="cast info">cast</span>
+                </div>
+            -->
+            </div>
     </div>
     <div class="mdc-dialog" id="room-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
         aria-describedby="my-dialog-content">

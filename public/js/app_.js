@@ -25,7 +25,7 @@ var contentState = false;
 let screenState = false;
 let cameraStream = null;
 let captureStream = null;
-let contentExists = false;
+let isContentExists = false;
 let contentShown = false;
 let swipeEventFunction;
 var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;

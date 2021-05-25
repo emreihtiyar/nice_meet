@@ -65,12 +65,12 @@ node_modules/
 .env
 
 .idea
-public\old
 public/old
-public/old/*
 js/app_test.js
 package-lock.json
 package.json
 .firebaserc
 firebase.json
 public/messages.html
+public/room_.html
+public/videos

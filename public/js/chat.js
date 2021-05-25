@@ -50,12 +50,14 @@ async function sendMessage(message) {
 }
 
 function sendMessageOnClick(event) {
-    let message = document.getElementById("messageTextBox").value;
+    let message = document.getElementById("message-send-text").value;
     console.log("sendMessageOnClick: ",message);
     if (message != "" && message != null && message != undefined) {
         sendMessage(message);
-        document.getElementById("messageTextBox").value = "";
+        document.getElementById("message-send-text").value = "";
     }else{
         console.log("Boş Mesaj gönderilmez ");
     }
 }
+
+document.getElementById("message-send-btn").addEventListener("click", sendMessageOnClick);

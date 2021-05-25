@@ -39,8 +39,8 @@ let screenState = false;
 let cameraStream = null;
 let captureStream = null;
 
-let contentExists = false;
-let contentShown = false;
+let isContentExists = false;
+let isContentShown = false;
 let swipeEventFunction;
 var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -56,17 +56,18 @@ function isHandheld() {
     return check;
 };
 
+//TODO: local video trackleri'ni kesdiğimizden ekran paylaşımı duruyor.
 function videoToggleEnable() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.", " Bu fonksiyon tetikleyici içerir.");
     document.getElementById('videoButton').addEventListener('click', () => {
         if (videoState) {
             videoState = false;
-            document.getElementById('localVideo').srcObject.getVideoTracks()[0].enabled = false;
+            cameraStream.getVideoTracks()[0].enabled = false;
             document.querySelector('#videoButton').innerText = "videocam_off";
             document.getElementById('videoButton').classList.add('toggle');
         } else {
             videoState = true;
-            document.getElementById('localVideo').srcObject.getVideoTracks()[0].enabled = true;
+            cameraStream.getVideoTracks()[0].enabled = true;
             document.querySelector('#videoButton').innerText = "videocam";
             document.querySelector('#videoButton').classList.remove('toggle');
         }
@@ -377,8 +378,8 @@ function closeConnection(peerConnection, roomRef, peerId) {
                     if (!isHandheld()) {
                         document.getElementById('screenShareButton').classList.remove('hidden');
                     }
-                    contentExists = false;
-                    contentShown = false;
+                    isContentExists = false;
+                    isContentShown = false;
                     document.removeEventListener('touchmove', swipeEventFunction);
                 }
                 peerConnection.close();
