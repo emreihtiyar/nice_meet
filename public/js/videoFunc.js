@@ -12,6 +12,35 @@ function isHandheld() {
     return check;
 };
 
+//! ---------------------------------------- START AND STOP CAPTURE -----------------------------------
+/**
+    ** Aldığı ayarlarla tarayıcı yardımı ile ekran paylaşımını (stream) laır ve captureStream'e ekler
+    *@return {Ekran kaydını geri döndürür.}.
+*/
+async function startCapture(displayMediaOptions) {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    
+    let captureStream = null;
+    captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+    
+    return captureStream;
+}
+
+/*
+    * Aldığı STREAM'in tracklerininin tamamını durdurur ve aldığı stream'i null olarak atar. 
+*/
+function stopCapture(stream) {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    
+    let tracks = stream.getTracks();
+    tracks.forEach(track => track.stop());
+    stream = null;
+    
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+}
+
+//!------------------------------------------------------ VİDEO AND MİC----------------------------------
 /*
     * 'videocam' butonuna basıldığında kamera stream'indeki görüntüyü durdurur ve ekrandaki güncellemeleri yapar
     TODO: localVideo.srcObject trackleri'ni kesdiğimizden ekran paylaşımı duruyor.-> Düzeltildi ama başka bir problem çıkarıp çıkarmadığı test edilmedi.
@@ -64,6 +93,34 @@ function muteToggleEnable() {
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
+
+/**
+    * muteState (mikrofonun kapatılması durumu) değiştiğinde bunu firebase'e kaydetmek için kullanıldı
+    * Bu sayede diğer kullanıcılar bu kullanıcının mikrofonunu kapattığını bilebilecekler
+    *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (muteToggleEnable) yap veya bu fonksiyonu çağır
+*/
+function mutingStateChangeInFirebase(roomRef) {
+    document.querySelector('#muteButton').addEventListener('click', () => {
+        roomRef.collection('partyList').doc(currentUser.uid).update({
+            'muteState': muteState
+        });
+    });
+}
+
+/**
+    * videoState (kamera durumu) değiştiğinde bunu firebase'e kaydetmek için kullanıldı
+    * Bu sayede diğer kullanıcılar bu kullanıcının kamerasını kapattığını bilebilecekler
+    *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (videoToggleEnable) yap veya bu fonksiyonu çağır
+*/
+function videoStateChangeInFirebase(roomRef) {
+    document.querySelector('#videoButton').addEventListener('click', () => {
+        roomRef.collection('partyList').doc(currentUser.uid).update({
+            'videoState': videoState
+        });
+    });
+}
+
+//!----------------------------------------------------- CONTENT ------------------------------------
 /*
     *Ekran paylaşımı açmaya yarar localVideo'ya bu paylaşımı koyar ve tuşları değiştirir.
     *signalContentShare ile paylaşımı açtığını firebase'e yani diğer peerlara bildirir.
@@ -105,73 +162,61 @@ function contentToggleOff(roomRef) {
 }
 
 /**
-    ** Aldığı ayarlarla tarayıcı yardımı ile ekran paylaşımını (stream) laır ve captureStream'e ekler
-    *@return {Ekran kaydını geri döndürür.}.
-*/
-async function startCapture(displayMediaOptions) {
-    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-    
-    let captureStream = null;
-    captureStream = await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
-    
-    return captureStream;
-}
-
-/*
-    * Aldığı STREAM'in tracklerininin tamamını durdurur ve aldığı stream'i null olarak atar. 
-*/
-function stopCapture(stream) {
-    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-    
-    let tracks = stream.getTracks();
-    tracks.forEach(track => track.stop());
-    stream = null;
-    
-    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
-}
-
-/**
-    **Hangup butonuna basıldığında baplantıyı kesmek için önce partyList'den idmizi siliyor,
-    **ardından eğer sunumu biz yapıyorsak onuda siliyor.
- * @param {*} roomRef 
+    ** Ekrandaki ekran paylaşımı butonunu dinliyor, butona basıldığında ekran paylaşımı açıksa kapatır, 
+    ** değilse önce ekran kaydını başlatır ardından bunu firebase'e bildirir.
  */
-function signalHangup(roomRef) {
+async function contentToggleButton(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
-    document.querySelector('#hangupBtn').addEventListener('click', async () => {
-        console.log("Disconnecting");
-        roomRef.collection('partyList').doc(nameId).delete();
-        if (screenState) {
-            roomRef.collection('partyList').doc(contentId).delete();
+    if (!screenState) {
+        const displayMediaOptions = {
+            video: {
+                cursor: "always"
+            },
+            audio: false
+        };
+        try {
+            console.log('Toggling screen share');
+            captureStream = await startCapture(displayMediaOptions);
+            toggleOnContent(roomRef);
+        } catch (error) {
+            console.log(error.message);
         }
+    } else {
+        contentToggleOff(roomRef);
+    }
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+}
+
+//!-------------------------------------------- SEND OR RECİEVE STREAM, OTHER PEERS ------------------
+/**
+    ** Parametre olarak aldığı peer'ın track'lerini dinler ve eğer track eklenirse bu peer için arayüzde video oluşturur.
+    *TODO: arayüz ile ilgili işlemleri burada yapmak yerine bunu farklı bir fonksiyonda yapmak daha mantıklı (createPeerVideo var ancak stream burada atanıyor)
+ */
+function receiveStream(peerConnection, remoteEndpointID, isPeerContent) {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    
+    peerConnection.addEventListener('track', event => {
+        console.log('Got remote track:', event.streams[0]);
+        if (document.querySelector("#video" + remoteEndpointID) == null) {
+            createPeerVideo(remoteEndpointID, isPeerContent);
+        }
+        document.querySelector("#video" + remoteEndpointID).srcObject = event.streams[0];
+        document.querySelector("#video" + remoteEndpointID).muted = false;
     });
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
 /**
-    * muteState (mikrofonun kapatılması durumu) değiştiğinde bunu firebase'e kaydetmek için kullanıldı
-    * Bu sayede diğer kullanıcılar bu kullanıcının mikrofonunu kapattığını bilebilecekler
-    *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (muteToggleEnable) yap veya bu fonksiyonu çağır
-*/
-function mutingStateChangeInFirebase(roomRef) {
-    document.querySelector('#muteButton').addEventListener('click', () => {
-        roomRef.collection('partyList').doc(currentUser.uid).update({
-            'muteState': muteState
-        });
+    ** Parametre olarak aldığı peer'a aldığı stream'i gönderir bu sayede diğer peer'a video ulaştırılır
+ */
+function sendStream(peerConnection, stream) {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    
+    stream.getTracks().forEach(track => {
+        peerConnection.addTrack(track, stream);
     });
-}
-
-/**
-    * videoState (kamera durumu) değiştiğinde bunu firebase'e kaydetmek için kullanıldı
-    * Bu sayede diğer kullanıcılar bu kullanıcının kamerasını kapattığını bilebilecekler
-    *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (videoToggleEnable) yap veya bu fonksiyonu çağır
-*/
-function videoStateChangeInFirebase(roomRef) {
-    document.querySelector('#videoButton').addEventListener('click', () => {
-        roomRef.collection('partyList').doc(currentUser.uid).update({
-            'videoState': videoState
-        });
-    });
+    
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }

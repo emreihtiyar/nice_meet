@@ -95,6 +95,7 @@ function logout() {
       console.error("oturum kapatma hatası:",error);
    })
 }
+
 function init() {
    firebase.initializeApp(firebaseConfig);
 

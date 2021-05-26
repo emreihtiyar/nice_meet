@@ -16,10 +16,10 @@ function addStream(peerConnection, stream) {
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
-
+//!---------------------------------------- ICE Candidate ---------------------------
 /**
  *? ICE Candidate -> (ICE isteği) -> ARAŞTIR.
- ** parametre olarak aldığı peerConnection'daki icecandidate değişikliklerini topluyor ve,
+ ** parametre olarak aldığı peerConnection'daki ICE candidate değişikliklerini topluyor ve,
  ** bu ICE candidate'leri firebase'de kendi koleksiyonunun altındaki Connection->ICECandidates içine yazıyor.
  */
 function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
@@ -64,7 +64,7 @@ async function receiveICECandidates(peerConnection, roomRef, remoteEndpointID, n
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
-
+//!---------------------------------------- OFFER Aand ANSWER (create, send, receive) ---------------------------
 /*
     *Aldığı peerConnection nesnesine özel bir Offer (Teklif) oluşturuyor.
     *Ayrıca oluşturduğu offer'ı peerConnectionın Local açıklaması olarak ekleniyor, gerekirse her peer'ın local açıklamasını bu sayede öğrenebiliriz
@@ -183,4 +183,190 @@ async function receiveAnswer(peerConnection, roomRef, peerId, nameId) {
     });
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+}
+
+/** 
+    ** peerConnection nesnesi oluşturur bu peer'a stream göndermeyi başlatır, ve bu peer için ICE siteklerini toplamaya başlar ve topladıklarını firebase'e kaydeder
+    ** bu peer'a istek(offer) oluşturur ve *sendOffer* ile bu offer'ı gönderir
+    ** bu peer'dan gelecek stream ve answer(cevap)'ları ve ICE isteklerini toplar
+    ** önce ekrandaki hangup butonuna dinyelici yerleştirir ve bağlantının kapanmasını ve yeniden başlatılmasını dinlemeye başlar
+ */
+async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isPeerContent) {
+    console.log('Create PeerConnection with configuration: ', configuration);
+
+    const peerConnection = new RTCPeerConnection(configuration);
+
+    peerConnectionStateLintener(peerConnection);
+
+    if (isUserContent) {
+        sendStream(peerConnection, captureStream)
+    } else {
+        sendStream(peerConnection, cameraStream)
+        document.getElementById('cameras').childNodes.forEach(camera => {
+            camera.addEventListener('click', () => {
+                switchStream(peerConnection, cameraStream);
+            });
+        });
+    }
+
+    signalICECandidates(peerConnection, roomRef, peerId, nameId);
+    const offer = await createOffer(peerConnection);
+
+    await sendOffer(offer, roomRef, peerId, nameId, isUserContent);
+
+    if (!isUserContent) {
+        receiveStream(peerConnection, peerId, isPeerContent);
+    }
+
+    await receiveAnswer(peerConnection, roomRef, peerId, nameId);
+
+    await receiveICECandidates(peerConnection, roomRef, peerId, nameId);
+
+    document.querySelector('#hangupBtn').addEventListener('click', () => peerConnection.close());
+
+    if (!isUserContent) {
+        closeConnection(peerConnection, roomRef, peerId);
+    }
+
+    if (!isUserContent) {
+        restartConnection(peerConnection, roomRef, peerId);
+    }
+}
+
+/**
+    ** peerConnection nesnesi oluşturur bu peer'a stream göndermeyi başlatır, ve bu peer için ICE siteklerini toplamaya başlar ve topladıklarını firebase'e kaydeder
+    ** Eğer sunan kişi değilse stream'leri toplar
+    ** offer(istek)'leri toplar ve her bir isteğe answer(cevap) oluşturur. Oluşturduğu cevabı gönderir ve ICE isteklerini toplar
+    ** önce ekrandaki hangup butonuna dinyelici yerleştirir ve bağlantının kapanmasını ve yeniden başlatılmasını dinlemeye başlar
+*/
+async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUserContent) {
+    console.log('Create PeerConnection with configuration: ', configuration)
+    
+    const peerConnection = new RTCPeerConnection(configuration);
+    peerConnectionStateLintener(peerConnection);
+
+    if (!isPeerContent) {
+        if (isUserContent) {
+            sendStream(peerConnection, captureStream);
+        } else {
+            sendStream(peerConnection, cameraStream);
+            document.getElementById('cameras').childNodes.forEach(camera => {
+                camera.addEventListener('click', () => {
+                    switchStream(peerConnection, cameraStream);
+                });
+            });
+        }
+    }
+
+    signalICECandidates(peerConnection, roomRef, peerId, nameId);
+
+    if (!isUserContent) {
+        receiveStream(peerConnection, peerId, isPeerContent);
+    }
+
+    await receiveOffer(peerConnection, roomRef, peerId, nameId);
+
+    const answer = await createAnswer(peerConnection);
+
+    await sendAnswer(answer, roomRef, peerId, nameId, isUserContent);
+
+    await receiveICECandidates(peerConnection, roomRef, peerId, nameId);
+
+    document.querySelector('#hangupBtn').addEventListener('click', () => peerConnection.close());
+
+    if (!isUserContent) {
+        closeConnection(peerConnection, roomRef, peerId);
+    }
+
+    if (!isUserContent) {
+        restartConnection(peerConnection, roomRef, peerId);
+    }
+}
+
+/**
+    ** Aldığı peer'ın bağlantısının kesilmesi durmunda  yeniden bağlanmaya çalışır
+ */
+function restartConnection(peerConnection, roomRef, peerId) {
+    peerConnection.oniceconnectionstatechange = async function () {
+        
+        if (peerConnection.iceConnectionState === "failed") {
+            console.log('Restarting connection with: ' + peerId);
+            if (peerConnection.restartIce) {
+                peerConnection.restartIce();
+            } else {
+                peerConnection.createOffer({ iceRestart: true })
+                    .then(peerConnection.setLocalDescription)
+                    .then(async offer => {
+                        await sendOffer(offer, roomRef, peerId, false);
+                    });
+            }
+        }
+    }
+
+}
+
+/**
+    ** Karşıdaki kişi firebase partyList'den ayrıldıysa veya ICE bağlantısı keslmişse bu durumda odadan ayrıldı demektir,
+    ** bu durumda arayüzden bu kişinin videosu kaldırılmalı, 
+    ** eğer bu kişi sunan kişi ise o zaman arayüzden bu sunumda kaldırılmalı ve bu durumu tutan değişkenler yenilenmeli.
+ */
+    function closeConnection(peerConnection, roomRef, peerId) {
+        console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    
+        roomRef.collection('partyList').where('name', '==', peerId).onSnapshot(snapshot => {
+            snapshot.docChanges().forEach(change => {
+                if (change.type == 'removed') {
+                    if (change.doc.data().display == 'content') {
+                        if (!isHandheld()) {
+                            document.getElementById('screenShareButton').classList.remove('hidden');
+                        }
+                        isContentExists = false;
+                        isContentShown = false;
+                        document.removeEventListener('touchmove', swipeEventFunction);
+                    }
+                    peerConnection.close();
+                    if (document.getElementById("video" + peerId + "Container") != null) {
+                        document.getElementById("video" + peerId + "Container").remove();
+                    }
+                    enforceLayout(--numberOfDisplayedPeers);
+                }
+            });
+        });
+    
+        peerConnection.onconnectionstatechange = function () {
+            if (peerConnection.connectionState == 'disconnected' || peerConnection.connectionState == "failed") {
+                //roomRef.collection('partyList').doc(peerId).delete();
+                peerConnection.close();
+                if (document.getElementById("video" + peerId + "Container") != null) {
+                    document.getElementById("video" + peerId + "Container").remove();
+                }
+            }
+        }
+    
+        console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+    }
+
+/**
+    ** Aldığı peer'ın bazı durumlarını dinler ve durum değişikliklerinde ekrana yazdırır, dinlediği durumlar
+    *@param {icegatheringstatechange} ->
+    *@param {connectionstatechange} ->
+    *@param {signalingstatechange} ->
+    *@param {iceconnectionstatechange} ->
+ */
+function peerConnectionStateLintener(peerConnection) {
+    peerConnection.addEventListener('icegatheringstatechange', () => {
+        console.log( `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+    });
+
+    peerConnection.addEventListener('connectionstatechange', () => {
+        console.log(`Connection state change: ${peerConnection.connectionState}`);
+    });
+
+    peerConnection.addEventListener('signalingstatechange', () => {
+        console.log(`Signaling state change: ${peerConnection.signalingState}`);
+    });
+
+    peerConnection.addEventListener('iceconnectionstatechange ', () => {
+        console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`);
+    });
 }
