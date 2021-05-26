@@ -180,6 +180,17 @@ function showLocalVideo() {
     document.getElementById('localVideoShowButton').classList.add('hidden'); 
 }
 
+function hideNavBarOnTap() {
+    document.addEventListener("click", () => {
+        document.getElementById("buttons").classList.add("unhover");
+    });
+}
+
+function cameraDropdown() {
+    menu.open = true;
+}
+
+//!-----------------------------------------------------------------------------------------------------------------
 //! Bu kısımdan sonrası benim yazımım
 function addMessageBubble(senderName, message, date) {
     let bubbleElement = document.createElement("div");
@@ -335,8 +346,7 @@ function setAllListeners() {
 setAllListeners();
 
 
-/*----------------------------- */
-
+//!-----------------------------------------------------------------------------------------------------------------
 //TODO: >swipeOnlyContent< fonksiyonu çalıştığında sonra bir tane user-video kalıyor nedenini alamadım, ikinci kez çalıştığında kalanda gidiyor
 function swipeOnlyContent() {
     let videoContainer = document.getElementById("video-container");
