@@ -79,7 +79,7 @@ function signalContentShare(roomRef) {
     function signalHangup(roomRef) {
         console.log(arguments.callee.name, " Fonksiyonun başındayız.");
         
-        document.querySelector('#hangupBtn').addEventListener('click', async () => {
+        document.querySelector('#hangup-btn').addEventListener('click', async () => {
             console.log("Disconnecting");
             roomRef.collection('partyList').doc(nameId).delete();
             if (screenState) {
@@ -135,7 +135,7 @@ function requestConnectionToCurrentPeers(roomRef, Id, isContent) {
             if (peerId != nameId && peerId != Id) {
                 if (isPeerContent) {
                     console.log('Content Identified');
-                    document.getElementById('screenShareButton').classList.add('hidden');
+                    document.getElementById('screen-share-btn').classList.add('hidden');
                 }
                 console.log('Sending request to: ' + peerId);
                 await peerRequestConnection(peerId, roomRef, Id, isContent, isPeerContent);
@@ -166,7 +166,7 @@ function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
                 if (change.doc.data().display == 'content') {
                     console.log('Content Identified');
                     isSenderContent = true;
-                    document.getElementById('screenShareButton').classList.add('hidden');
+                    document.getElementById('screen-share-btn').classList.add('hidden');
                 }
                 console.log('Is sender content' + isSenderContent);
                 await peerAcceptConnection(change.doc.id, roomRef, nameId, isSenderContent, isReceiverContent);
@@ -213,11 +213,11 @@ async function openUserMedia() {
         }
     });
 
-    document.querySelector('#localVideo').srcObject = cameraStream;
+    document.querySelector('#local-video').srcObject = cameraStream;
 
-    console.log('Stream:', document.querySelector('#localVideo').srcObject);
-    document.querySelector('#joinBtn').classList.remove("hidden");
-    document.querySelector('#createBtn').classList.remove("hidden");
+    console.log('Stream:', document.querySelector('#local-video').srcObject);
+    document.querySelector('#join-btn').classList.remove("hidden");
+    document.querySelector('#create-btn').classList.remove("hidden");
 
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
@@ -226,7 +226,7 @@ async function openUserMedia() {
     *bağlantıdan çık ve sayfayı yenile bu sayede görüşmeden çıkmış olursun
  */
 function hangUp() {
-    const tracks = document.querySelector('#localVideo').srcObject.getTracks();
+    const tracks = document.querySelector('#local-video').srcObject.getTracks();
     tracks.forEach(track => {
         track.stop();
     });
@@ -259,22 +259,22 @@ async function getCurrentUserInfo() {
 
 
 async function createRoom() {
-    document.querySelector('#localVideo').addEventListener('click', hideLocalVideo);
-    document.querySelector('#hangupBtn').classList.remove("hidden");
-    document.querySelector('#createBtn').classList.add("hidden");
-    document.querySelector('#shareButton').classList.remove("hidden");
-    document.querySelector('#muteButton').classList.remove("hidden");
-    document.querySelector('#joinBtn').classList.add("hidden");
-    document.querySelector('#screenShareButton').classList.remove("hidden");
+    document.querySelector('#local-video').addEventListener('click', hideLocalVideo);
+    document.querySelector('#hangup-btn').classList.remove("hidden");
+    document.querySelector('#create-btn').classList.add("hidden");
+    document.querySelector('#share-btn').classList.remove("hidden");
+    document.querySelector('#mute-btn').classList.remove("hidden");
+    document.querySelector('#join-btn').classList.add("hidden");
+    document.querySelector('#screen-share-btn').classList.remove("hidden");
     document.querySelector('#chat-btn').classList.remove("hidden");
     document.querySelector('#users-btn').classList.remove("hidden");
-    document.querySelector('#recordButton').classList.remove("hidden");
+    document.querySelector('#record-btn').classList.remove("hidden");
 
     
     const roomRef = await db.collection('rooms').doc();
     console.log("roomRef: ", roomRef);
 
-    document.querySelector('#shareButton').onclick = () => {
+    document.querySelector('#share-btn').onclick = () => {
         //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank");
         window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`, "_blank");
     };
@@ -296,8 +296,8 @@ async function createRoom() {
 
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
-    document.querySelector('#screenShareButton').addEventListener('click', () => contentToggleButton(roomRef));
-    document.querySelector('#recordButton').addEventListener('click', () => startRecordForLocal());
+    document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton(roomRef));
+    document.querySelector('#record-btn').addEventListener('click', () => startRecordForLocal());
 }
 
 function joinRoom() {
@@ -315,18 +315,18 @@ async function joinRoomById(roomId) {
     console.log('Got room:', roomSnapshot.exists);
 
     if (roomSnapshot.exists) {
-        document.querySelector('#hangupBtn').classList.remove("hidden");
-        document.querySelector('#localVideo').addEventListener('click', hideLocalVideo);
-        document.querySelector('#shareButton').onclick = () => {
+        document.querySelector('#hangup-btn').classList.remove("hidden");
+        document.querySelector('#local-video').addEventListener('click', hideLocalVideo);
+        document.querySelector('#share-btn').onclick = () => {
             //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank")
             window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`, "_blank");
         };
 
-        document.querySelector('#shareButton').classList.remove("hidden");
-        document.querySelector('#createBtn').classList.add("hidden");
-        document.querySelector('#joinBtn').classList.add("hidden");
-        document.querySelector('#muteButton').classList.remove("hidden");
-        document.querySelector('#screenShareButton').classList.remove("hidden");
+        document.querySelector('#share-btn').classList.remove("hidden");
+        document.querySelector('#create-btn').classList.add("hidden");
+        document.querySelector('#join-btn').classList.add("hidden");
+        document.querySelector('#mute-btn').classList.remove("hidden");
+        document.querySelector('#screen-share-btn').classList.remove("hidden");
 
         nameId = await addUserToRoom(roomRef);
 
@@ -347,10 +347,10 @@ async function joinRoomById(roomId) {
 
         signalHangup(roomRef);
 
-        document.querySelector('#screenShareButton').addEventListener('click', () => contentToggleButton(roomRef));
+        document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton(roomRef));
 
     } else {
-        document.querySelector('#currentRoom').innerText = `Room: ${roomId} - Doesn't exist!`;
+        document.querySelector('#current-room').innerText = `Room: ${roomId} - Doesn't exist!`;
     }
 }
 
@@ -386,7 +386,7 @@ function init() {
     var eventName = isiOS ? 'pagehide' : 'beforeunload';
 
     window.addEventListener(eventName, function () {
-        document.getElementById('hangupBtn').click();
+        document.getElementById('hangup-btn').click();
     });
 
 }

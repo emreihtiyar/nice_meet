@@ -51,7 +51,7 @@ function enforceLayout(numberOfDisplayedPeers) {
         } else {
             document.getElementById('videos').setAttribute('class', '');
             document.getElementById('videos').classList.add('sixteen_cell');
-            document.getElementById('localVideoContainer').classList.remove('sideLocalVideo');
+            document.getElementById('local-video-container').classList.remove('sideLocalVideo');
         }
     }
 }
@@ -66,27 +66,27 @@ function gridLayout(numberOfDisplayedPeers) {
     if (numberOfDisplayedPeers == 1) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('single_cell');
-        document.getElementById('localVideoContainer').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('sideLocalVideo');
     } else if (numberOfDisplayedPeers == 2) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('two_cell');
-        document.getElementById('localVideoContainer').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('sideLocalVideo');
     } else if (numberOfDisplayedPeers > 2 && numberOfDisplayedPeers <= 4) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('four_cell');
-        document.getElementById('localVideoContainer').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('sideLocalVideo');
     } else if (numberOfDisplayedPeers > 4 && numberOfDisplayedPeers <= 9) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('nine_cell');
-        document.getElementById('localVideoContainer').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('sideLocalVideo');
     } else if (numberOfDisplayedPeers > 9) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('sixteen_cell');
-        document.getElementById('localVideoContainer').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('sideLocalVideo');
     } else {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('single_cell');
-        document.getElementById('localVideoContainer').classList.remove('sideLocalVideo');
+        document.getElementById('local-video-container').classList.remove('sideLocalVideo');
     }
 }
 
@@ -110,7 +110,7 @@ function swipeContent() {
 
 function createPeerVideo(peerId, isPeerContent) {
     const peerNode = document.getElementsByClassName('video-box')[0].cloneNode();
-    peerNode.appendChild(document.getElementById('localVideo').cloneNode());
+    peerNode.appendChild(document.getElementById('local-video').cloneNode());
 
     peerNode.id = 'video' + peerId + 'Container';
     peerNode.firstElementChild.id = 'video' + peerId;
@@ -168,16 +168,16 @@ function closeFullscreen() {
 
 function hideLocalVideo() {
     if (numberOfDisplayedPeers > 0) {
-        localVideoElem = document.getElementById('localVideoContainer');
+        localVideoElem = document.getElementById('local-video-container');
         localVideoElem.classList.add('relaxedHidden');
-        document.getElementById('localVideoShowButton').classList.remove('hidden'); 
+        document.getElementById('local-video-show-btn').classList.remove('hidden'); 
     }
 }
 
 function showLocalVideo() {
-    localVideoElem = document.getElementById('localVideoContainer');
+    localVideoElem = document.getElementById('local-video-container');
     localVideoElem.classList.remove('relaxedHidden');
-    document.getElementById('localVideoShowButton').classList.add('hidden'); 
+    document.getElementById('local-video-show-btn').classList.add('hidden'); 
 }
 
 function hideNavBarOnTap() {
@@ -338,28 +338,29 @@ function usersBtnListener() {
 }
 
 function addAllListener() {
-    document.querySelector('#hangupBtn').addEventListener('click', hangUp);
-    document.querySelector('#createBtn').addEventListener('click', createRoom);
-    document.querySelector('#joinBtn').addEventListener('click', joinRoom);
-    document.querySelector('#localVideoShowButton').addEventListener('click', showLocalVideo);
-    document.querySelector('#cameraOptions').addEventListener('click', cameraDropdown);
+    document.querySelector('#hangup-btn').addEventListener('click', hangUp);
+    document.querySelector('#create-btn').addEventListener('click', createRoom);
+    document.querySelector('#join-btn').addEventListener('click', joinRoom);
+    document.querySelector('#local-video-show-btn').addEventListener('click', showLocalVideo);
+    document.querySelector('#camera-options').addEventListener('click', cameraDropdown);
     document.getElementById("chat-btn").onclick = chatBtnListener;
     document.getElementById("users-btn").onclick = usersBtnListener;
+    document.getElementById("")
 
     // Tam ekrana geçmek için 
     //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.
     let isFullscreen = false;
-    document.getElementById('appFullscreenButton').addEventListener('click', () => {
+    document.getElementById('full-screen-btn').addEventListener('click', () => {
         if (!isFullscreen) {
             isFullscreen = true;
             openFullscreen(document.body);
-            document.getElementById('appFullscreenButton').classList.add('toggle');
-            document.getElementById('appFullscreenButton').innerText = 'fullscreen_exit';
+            document.getElementById('full-screen-btn').classList.add('toggle');
+            document.getElementById('full-screen-btn').innerText = 'fullscreen_exit';
         } else {
             isFullscreen = false;
             closeFullscreen();
-            document.getElementById('appFullscreenButton').classList.remove('toggle');
-            document.getElementById('appFullscreenButton').innerText = 'fullscreen';
+            document.getElementById('full-screen-btn').classList.remove('toggle');
+            document.getElementById('full-screen-btn').innerText = 'fullscreen';
         }
     })
 }
@@ -521,7 +522,7 @@ function enforceLayout_(numberOfDisplayedPeers) {
         } else {
             document.getElementById('videos').setAttribute('class', '');
             document.getElementById('videos').classList.add('sixteen_cell');
-            document.getElementById('localVideoContainer').classList.remove('sideLocalVideo');
+            document.getElementById('local-video-container').classList.remove('sideLocalVideo');
         }
     }
 

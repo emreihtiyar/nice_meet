@@ -39,7 +39,7 @@ function changeCamera(deviceId) {
         },
         audio: true
     }).then(stream => {
-        document.getElementById('localVideo').srcObject = stream;
+        document.getElementById('local-video').srcObject = stream;
         cameraStream = stream
     });
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
@@ -53,17 +53,17 @@ function changeCamera(deviceId) {
 function videoToggleEnable() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.", " Bu fonksiyon tetikleyici içerir.");
     
-    document.getElementById('videoButton').addEventListener('click', () => {
+    document.getElementById('video-btn').addEventListener('click', () => {
         if (videoState) {
             videoState = false;
             cameraStream.getVideoTracks()[0].enabled = false;
-            document.querySelector('#videoButton').innerText = "videocam_off";
-            document.getElementById('videoButton').classList.add('toggle');
+            document.querySelector('#video-btn').innerText = "videocam_off";
+            document.getElementById('video-btn').classList.add('toggle');
         } else {
             videoState = true;
             cameraStream.getVideoTracks()[0].enabled = true;
-            document.querySelector('#videoButton').innerText = "videocam";
-            document.querySelector('#videoButton').classList.remove('toggle');
+            document.querySelector('#video-btn').innerText = "videocam";
+            document.querySelector('#video-btn').classList.remove('toggle');
         }
     });
     
@@ -71,26 +71,26 @@ function videoToggleEnable() {
 }
 
 /*
-    * muteButton butonuna basılmasını dinler muteState durumuna göre sesi açar veya kapatır.
+    * mute-btn butonuna basılmasını dinler muteState durumuna göre sesi açar veya kapatır.
     TODO: Butonun UI tasarım değişikliği gerekli yerde yapılmalı
     TODO: kameraStream'in global kalmasına gereksiz olabilir, bunu denemelisin
 */
 function muteToggleEnable() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
-    document.querySelector('#muteButton').addEventListener('click', () => {
+    document.querySelector('#mute-btn').addEventListener('click', () => {
         if (!muteState) {
             console.log("Muting");
             muteState = true;
             cameraStream.getAudioTracks()[0].enabled = false;
-            document.querySelector('#muteButton').innerText = "mic_off";
-            document.getElementById('muteButton').classList.add('toggle');
+            document.querySelector('#mute-btn').innerText = "mic_off";
+            document.getElementById('mute-btn').classList.add('toggle');
         } else {
             console.log("Unmuting");
             muteState = false;
             cameraStream.getAudioTracks()[0].enabled = true;
-            document.querySelector('#muteButton').innerText = "mic";
-            document.getElementById('muteButton').classList.remove('toggle');
+            document.querySelector('#mute-btn').innerText = "mic";
+            document.getElementById('mute-btn').classList.remove('toggle');
         }
     });
     
@@ -104,7 +104,7 @@ function muteToggleEnable() {
     *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (muteToggleEnable) yap veya bu fonksiyonu çağır
 */
 function mutingStateChangeInFirebase(roomRef) {
-    document.querySelector('#muteButton').addEventListener('click', () => {
+    document.querySelector('#mute-btn').addEventListener('click', () => {
         roomRef.collection('partyList').doc(currentUser.uid).update({
             'muteState': muteState
         });
@@ -117,7 +117,7 @@ function mutingStateChangeInFirebase(roomRef) {
     *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (videoToggleEnable) yap veya bu fonksiyonu çağır
 */
 function videoStateChangeInFirebase(roomRef) {
-    document.querySelector('#videoButton').addEventListener('click', () => {
+    document.querySelector('#video-btn').addEventListener('click', () => {
         roomRef.collection('partyList').doc(currentUser.uid).update({
             'videoState': videoState
         });
@@ -135,9 +135,9 @@ function videoStateChangeInFirebase(roomRef) {
 function toggleOnContent(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
-    document.getElementById('localVideo').srcObject = captureStream;
-    document.getElementById('screenShareButton').innerText = "stop_screen_share";
-    document.getElementById('screenShareButton').classList.add('toggle');
+    document.getElementById('local-video').srcObject = captureStream;
+    document.getElementById('screen-share-btn').innerText = "stop_screen_share";
+    document.getElementById('screen-share-btn').classList.add('toggle');
     signalContentShare(roomRef);
     screenState = true;
     captureStream.getVideoTracks()[0].onended = () => {
@@ -157,10 +157,10 @@ function contentToggleOff(roomRef) {
     
     roomRef.collection('partyList').doc(contentId).delete();
     stopCapture(captureStream);
-    document.getElementById('localVideo').srcObject = cameraStream;
+    document.getElementById('local-video').srcObject = cameraStream;
     screenState = false;
-    document.getElementById('screenShareButton').innerText = 'screen_share';
-    document.getElementById('screenShareButton').classList.remove('toggle');
+    document.getElementById('screen-share-btn').innerText = 'screen_share';
+    document.getElementById('screen-share-btn').classList.remove('toggle');
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }

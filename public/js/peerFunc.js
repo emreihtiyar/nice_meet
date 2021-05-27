@@ -222,7 +222,7 @@ async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isP
 
     await receiveICECandidates(peerConnection, roomRef, peerId, nameId);
 
-    document.querySelector('#hangupBtn').addEventListener('click', () => peerConnection.close());
+    document.querySelector('#hangup-btn').addEventListener('click', () => peerConnection.close());
 
     if (!isUserContent) {
         closeConnection(peerConnection, roomRef, peerId);
@@ -272,7 +272,7 @@ async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUs
 
     await receiveICECandidates(peerConnection, roomRef, peerId, nameId);
 
-    document.querySelector('#hangupBtn').addEventListener('click', () => peerConnection.close());
+    document.querySelector('#hangup-btn').addEventListener('click', () => peerConnection.close());
 
     if (!isUserContent) {
         closeConnection(peerConnection, roomRef, peerId);

@@ -27,21 +27,21 @@
 
 <body>
     <div id="buttons">
-        <button class="material-icons btn-circle" id="createBtn">group_add</button>
-        <button class="material-icons btn-circle" id="joinBtn">call</button>
-        <button class="material-icons hidden btn-circle" id="hangupBtn">call_end</button>
-        <button class="material-icons hidden btn-circle" id="shareButton">add_ic_call</button>
-        <button class="material-icons btn-circle" id="muteButton">mic</button>
-        <button class="material-icons btn-circle" id="videoButton">videocam</button>
-        <button class="material-icons btn-circle hidden" id="screenShareButton">screen_share</button>
-        <button class="material-icons btn-circle hidden" id="localVideoShowButton">visibility</button>
-        <button class="material-icons btn-circle" id="appFullscreenButton">fullscreen</button>
-        <button class="material-icons btn-circle hidden" id="recordButton">fiber_manual_record</button>
+        <button class="material-icons btn-circle" id="create-btn">group_add</button>
+        <button class="material-icons btn-circle" id="join-btn">call</button>
+        <button class="material-icons hidden btn-circle" id="hangup-btn">call_end</button>
+        <button class="material-icons hidden btn-circle" id="share-btn">share</button>
+        <button class="material-icons btn-circle" id="mute-btn">mic</button>
+        <button class="material-icons btn-circle" id="video-btn">videocam</button>
+        <button class="material-icons btn-circle hidden" id="screen-share-btn">screen_share</button>
+        <button class="material-icons btn-circle hidden" id="local-video-show-btn">visibility</button>
+        <button class="material-icons btn-circle" id="full-screen-btn">fullscreen</button>
+        <button class="material-icons btn-circle hidden" id="record-btn">fiber_manual_record</button>
         <button class="material-icons btn-circle hidden" id="chat-btn">message</button>
         <button class="material-icons btn-circle hidden" id="users-btn">group</button>
-        <div id="deviceDropdown">
-            <!--<button class="mdc-button" id="cameraOptions"><span class="mdc-button__label">Camera</span</button>-->
-            <button class="material-icons btn-circle" id="cameraOptions">arrow_drop_up</button>
+        <div id="device-dropdown">
+            <!--<button class="mdc-button" id="camera-options"><span class="mdc-button__label">Camera</span</button>-->
+            <button class="material-icons btn-circle" id="camera-options">arrow_drop_up</button>
             <div class="mdc-menu-surface--anchor">
                 <div class="mdc-menu mdc-menu-surface" tabindex="-1"
                     style="transform-origin: center bottom; left: 0px; bottom: 0px; max-height: 767.781px;">
@@ -61,14 +61,17 @@
         </div>
     </div>
     </div>
+    
     <div>
-        <span id="currentRoom"></span>
+        <span id="current-room"></span>
     </div>
+
     <div id="videos" class='single_cell'>
-        <div class="video-box" id="localVideoContainer" >
-            <video id="localVideo" muted autoplay playsinline></video>
+        <div class="video-box" id="local-video-container" >
+            <video id="local-video" muted autoplay playsinline></video>
         </div>
     </div>
+
     <div id="bars-container" class="bars-container">
         <div id="chat-bar" class="chat-bar">
             <div class="chat">
@@ -99,7 +102,7 @@
 
     <div id="canvas-container" class="canvas-container">
         <canvas id="record-canvas" width="1080" height="720">
-
+            Sorry. This navigator is canvas not supported. That's why you can not recording meeting.
         </canvas>
     </div>
 
@@ -129,6 +132,7 @@
         </div>
         <div class="mdc-dialog__scrim"></div>
     </div>
+
     <script src="js/style.js"></script>
     <script src="js/CodecHandler.js"></script>
     <script defer src="js/videoFunc.js"></script>
