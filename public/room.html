@@ -36,8 +36,9 @@
         <button class="material-icons btn-circle hidden" id="screenShareButton">screen_share</button>
         <button class="material-icons btn-circle hidden" id="localVideoShowButton">visibility</button>
         <button class="material-icons btn-circle" id="appFullscreenButton">fullscreen</button>
-        <button class="material-icons btn-circle" id="chat-btn">message</button>
-        <button class="material-icons btn-circle" id="users-btn">group</button>
+        <button class="material-icons btn-circle hidden" id="recordButton">fiber_manual_record</button>
+        <button class="material-icons btn-circle hidden" id="chat-btn">message</button>
+        <button class="material-icons btn-circle hidden" id="users-btn">group</button>
         <div id="deviceDropdown">
             <!--<button class="mdc-button" id="cameraOptions"><span class="mdc-button__label">Camera</span</button>-->
             <button class="material-icons btn-circle" id="cameraOptions">arrow_drop_up</button>
@@ -64,7 +65,7 @@
         <span id="currentRoom"></span>
     </div>
     <div id="videos" class='single_cell'>
-        <div class="video-box" id="localVideoContainer">
+        <div class="video-box" id="localVideoContainer" >
             <video id="localVideo" muted autoplay playsinline></video>
         </div>
     </div>
@@ -95,6 +96,13 @@
             -->
             </div>
     </div>
+
+    <div id="canvas-container" class="canvas-container">
+        <canvas id="record-canvas" width="1080" height="720">
+
+        </canvas>
+    </div>
+
     <div class="mdc-dialog" id="room-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
         aria-describedby="my-dialog-content">
         <div class="mdc-dialog__container">
@@ -128,7 +136,7 @@
     <script defer src="js/app.js"></script>
     <script defer src="js/chat.js"></script>
     <script defer src="js/users-list.js"></script>
-    <script defer src="js/recordStream.js"></script>
+    <script defer src="js/record.js"></script>
 </body>
 
 </html>

@@ -3,7 +3,7 @@
     * Buradaki fonksiyonlar genelde app.js içinde çağırılır.
 */
 
-//! ---------------------------------------- START AND STOP CAPTURE -----------------------------------
+//! ---------------------------------------- START AND STOP CAPTURE AND CHANGE CAMERA -----------------------------------
 /**
     ** Aldığı ayarlarla tarayıcı yardımı ile ekran paylaşımını (stream) laır ve captureStream'e ekler
     *@return {Ekran kaydını geri döndürür.}.
@@ -31,6 +31,19 @@ function stopCapture(stream) {
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
+function changeCamera(deviceId) {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            deviceId: deviceId
+        },
+        audio: true
+    }).then(stream => {
+        document.getElementById('localVideo').srcObject = stream;
+        cameraStream = stream
+    });
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+}
 //!------------------------------------------------------ VİDEO AND MİC----------------------------------
 /*
     * 'videocam' butonuna basıldığında kamera stream'indeki görüntüyü durdurur ve ekrandaki güncellemeleri yapar

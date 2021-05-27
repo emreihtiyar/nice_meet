@@ -103,20 +103,6 @@ function switchStream(peerConnection, stream) {
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
-function changeCamera(deviceId) {
-    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-    navigator.mediaDevices.getUserMedia({
-        video: {
-            deviceId: deviceId
-        },
-        audio: true
-    }).then(stream => {
-        document.getElementById('localVideo').srcObject = stream;
-        cameraStream = stream
-    });
-    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
-}
-
 async function addUserToRoom(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
@@ -280,6 +266,10 @@ async function createRoom() {
     document.querySelector('#muteButton').classList.remove("hidden");
     document.querySelector('#joinBtn').classList.add("hidden");
     document.querySelector('#screenShareButton').classList.remove("hidden");
+    document.querySelector('#chat-btn').classList.remove("hidden");
+    document.querySelector('#users-btn').classList.remove("hidden");
+    document.querySelector('#recordButton').classList.remove("hidden");
+
     
     const roomRef = await db.collection('rooms').doc();
     console.log("roomRef: ", roomRef);
@@ -307,6 +297,7 @@ async function createRoom() {
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
     document.querySelector('#screenShareButton').addEventListener('click', () => contentToggleButton(roomRef));
+    document.querySelector('#recordButton').addEventListener('click', () => startRecordForLocal());
 }
 
 function joinRoom() {
@@ -361,31 +352,6 @@ async function joinRoomById(roomId) {
     } else {
         document.querySelector('#currentRoom').innerText = `Room: ${roomId} - Doesn't exist!`;
     }
-}
-
-function addAllListener(params) {
-    document.querySelector('#hangupBtn').addEventListener('click', hangUp);
-    document.querySelector('#createBtn').addEventListener('click', createRoom);
-    document.querySelector('#joinBtn').addEventListener('click', joinRoom);
-    document.querySelector('#localVideoShowButton').addEventListener('click', showLocalVideo);
-    document.querySelector('#cameraOptions').addEventListener('click', cameraDropdown);
-
-    // Tam ekrana geçmek için 
-    //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.
-    let isFullscreen = false;
-    document.getElementById('appFullscreenButton').addEventListener('click', () => {
-        if (!isFullscreen) {
-            isFullscreen = true;
-            openFullscreen(document.body);
-            document.getElementById('appFullscreenButton').classList.add('toggle');
-            document.getElementById('appFullscreenButton').innerText = 'fullscreen_exit';
-        } else {
-            isFullscreen = false;
-            closeFullscreen();
-            document.getElementById('appFullscreenButton').classList.remove('toggle');
-            document.getElementById('appFullscreenButton').innerText = 'fullscreen';
-        }
-    })
 }
 
 function init() {

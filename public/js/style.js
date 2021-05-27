@@ -337,16 +337,33 @@ function usersBtnListener() {
     }
 }
 
-function setAllListeners() {
+function addAllListener() {
+    document.querySelector('#hangupBtn').addEventListener('click', hangUp);
+    document.querySelector('#createBtn').addEventListener('click', createRoom);
+    document.querySelector('#joinBtn').addEventListener('click', joinRoom);
+    document.querySelector('#localVideoShowButton').addEventListener('click', showLocalVideo);
+    document.querySelector('#cameraOptions').addEventListener('click', cameraDropdown);
     document.getElementById("chat-btn").onclick = chatBtnListener;
     document.getElementById("users-btn").onclick = usersBtnListener;
-    //document.getElementById("main-container").onmousemove = mouseMoveListener; 
+
+    // Tam ekrana geçmek için 
+    //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.
+    let isFullscreen = false;
+    document.getElementById('appFullscreenButton').addEventListener('click', () => {
+        if (!isFullscreen) {
+            isFullscreen = true;
+            openFullscreen(document.body);
+            document.getElementById('appFullscreenButton').classList.add('toggle');
+            document.getElementById('appFullscreenButton').innerText = 'fullscreen_exit';
+        } else {
+            isFullscreen = false;
+            closeFullscreen();
+            document.getElementById('appFullscreenButton').classList.remove('toggle');
+            document.getElementById('appFullscreenButton').innerText = 'fullscreen';
+        }
+    })
 }
 
-setAllListeners();
-
-
-//!-----------------------------------------------------------------------------------------------------------------
 //TODO: >swipeOnlyContent< fonksiyonu çalıştığında sonra bir tane user-video kalıyor nedenini alamadım, ikinci kez çalıştığında kalanda gidiyor
 function swipeOnlyContent() {
     let videoContainer = document.getElementById("video-container");

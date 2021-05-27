@@ -240,3 +240,21 @@ html, body {
   display: grid;
   grid-template-rows: 25% 25% 25% 25%;
 }
+
+/*! Record Stream and canvas ile ilgili ayarlar*/
+
+.canvas-container {
+  margin-top: 5px;
+  background-color: black;
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+#record-canvas {
+  background-color: black;
+  /*visibility: hidden;
+  display: none;*/
+}
