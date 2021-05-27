@@ -139,7 +139,7 @@ function toggleOnContent(roomRef) {
     document.getElementById('screen-share-btn').innerText = "stop_screen_share";
     document.getElementById('screen-share-btn').classList.add('toggle');
     signalContentShare(roomRef);
-    screenState = true;
+    contentState = true;
     captureStream.getVideoTracks()[0].onended = () => {
         contentToggleOff(roomRef);
     }
@@ -158,7 +158,7 @@ function contentToggleOff(roomRef) {
     roomRef.collection('partyList').doc(contentId).delete();
     stopCapture(captureStream);
     document.getElementById('local-video').srcObject = cameraStream;
-    screenState = false;
+    contentState = false;
     document.getElementById('screen-share-btn').innerText = 'screen_share';
     document.getElementById('screen-share-btn').classList.remove('toggle');
     
@@ -172,7 +172,7 @@ function contentToggleOff(roomRef) {
 async function contentToggleButton(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
-    if (!screenState) {
+    if (!contentState) {
         const displayMediaOptions = {
             video: {
                 cursor: "always"

@@ -1,6 +1,16 @@
-var recordedChunks = [];
+let recordedChunks = [];
 let isRecording = false
 
+
+function recordMeeting() {
+    console.log("recording :)");
+
+    if (isContentExists) {
+        
+    } else {
+        
+    }
+}
 
 function handleDataAvailable(event) {
     console.log("data-available");
@@ -12,6 +22,7 @@ function handleDataAvailable(event) {
         // ...
     }
 }
+
 function download() {
     var blob = new Blob(recordedChunks, {
         type: "video/webm"
@@ -21,14 +32,16 @@ function download() {
     document.body.appendChild(a);
     a.style = "display: none";
     a.href = url;
-    a.download = "test.webm";
+    a.download = "nice meet meeting record "+(new Date().toDateString())+".webm";
     a.click();
+    recordedChunks = [];
     window.URL.revokeObjectURL(url);
 }
 
 function stopRecordForLocal(mediaRecorder) {
     console.log("stopping");
     mediaRecorder.stop();
+    clearCanvas();
 }
 
 function startRecordForLocal(stream) {
@@ -51,16 +64,19 @@ function testLocalRecord(stream, sec) {
 }
 
 
-function recordCanvas(videoID1, videoID2, stream1, stream2) {
-    let canvas = showCanvas(videoID1, videoID2);
+function recordCanvas(videoIDs, isContentExists) {
+    let canvas = startCanvas(videoIDs, isContentExists);
     let canvasStream = canvas.captureStream(30);
-    canvasStream.addTrack(stream1.getAudioTracks()[0]);
-    canvasStream.addTrack(stream2.getAudioTracks()[0]);
+
+    videoIDs.forEach(element => {
+        canvasStream.addTrack(document.getElementById(element).srcObject.getAudioTracks()[0]);
+    });
+
     testLocalRecord(canvasStream, 10);
 }
 
 
-function showCanvas(videoID1, videoID2) {
+function startCanvas(videoIDs, isContentExists) {
 /*
     let screenVideo = document.createElement("VIDEO");
     screenVideo.srcObject = new MediaStream();
@@ -71,24 +87,60 @@ function showCanvas(videoID1, videoID2) {
 */
     let canvas = document.getElementById("record-canvas");
     let context = canvas.getContext("2d");
-    let vendorUrl = window.URL || window.webkitURL;
-    console.log(context.canvas.clientWidth);
+    let videos = [];
 
-    let video1 = document.getElementById(videoID1);
-    let video2 = document.getElementById(videoID2);
-    console.log("video1:", video1);
-    console.log("video2:", video2);
+    videoIDs.forEach(element => {
+        videos.push(document.getElementById(element));
+    });
+    console.log("videos:", videos);
 
-    drawVideos(context, video1, video2, context.canvas.clientWidth, context.canvas.clientHeight);
+    if (isContentExists) {
+        drawVideosWithContent(context, videos[0], videos[1], context.canvas.clientWidth, context.canvas.clientHeight);
+    }else{
+        drawVideosNoContent(context, videos, context.canvas.clientWidth, context.canvas.clientHeight);
+    }
+
     return canvas;
 }
 
+function clearCanvas() {
+    let canvas = document.getElementById("record-canvas");
+    let canvasContainer = document.getElementById("canvas-container");
+    let newCanvas = canvas.cloneNode(false);
 
-function drawVideos(context, contentVideo, cameraVideo, canvasWidth, canvasHeight, other) {
+    canvasContainer.removeChild(canvas);
+    canvasContainer.appendChild(newCanvas);
+}
+
+function drawVideosWithContent(context, contentVideo, cameraVideo, canvasWidth, canvasHeight, other) {
     if (other == undefined || other == null) {
         other = [(canvasWidth*(4/5)), canvasHeight, (canvasWidth*(1/5)), (canvasHeight*(1/5))]; // content_width, content_height, camera_width, camera_height
     }
     context.drawImage(contentVideo, 0, 0, other[0], other[1]);
     context.drawImage(cameraVideo, other[0]+1, (other[1]/2)-(other[3]/2), other[2], other[3]);
-    setTimeout(drawVideos, 10, context, contentVideo, cameraVideo, canvasWidth, canvasHeight, other);
+    setTimeout(drawVideosWithContent, 10, context, contentVideo, cameraVideo, canvasWidth, canvasHeight, other);
+}
+
+function drawVideosNoContent(context, videos, canvasWidth, canvasHeight) {
+    let nVideos = videos.length;
+
+    if (nVideos == 1) {
+        context.drawImage(videos[0], 1, 1, canvasWidth-1, canvasHeight-1);
+        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
+    }else if (nVideos == 2) {
+        context.drawImage(videos[0], 0, 0, canvasWidth/2, canvasHeight);
+        context.drawImage(videos[1], canvasWidth/2+1, 0, canvasWidth/2, canvasHeight);
+        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
+    }else if (nVideos == 3) {
+        context.drawImage(videos[0], 0, 0, canvasWidth/2-1, canvasHeight/2-1);
+        context.drawImage(videos[1], canvasWidth/2+1, 0, canvasWidth/2, canvasHeight/2-1);
+        context.drawImage(videos[2], 0, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
+        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
+    }else if (nVideos == 4) {
+        context.drawImage(videos[0], 0, 0, canvasWidth/2-1, canvasHeight/2-1);
+        context.drawImage(videos[1], canvasWidth/2+1, 0, canvasWidth/2, canvasHeight/2-1);
+        context.drawImage(videos[2], 0, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
+        context.drawImage(videos[3], canvasWidth/2+1, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
+        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
+    }
 }

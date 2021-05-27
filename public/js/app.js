@@ -32,16 +32,17 @@ let roomDialog = null;
 let nameId = null;  //nameId -> şuandaki kullanıcının id'si (currentUser.uid) //TODO: Bundan kurtulmaya çalışıyorum ama kesin olacak mı belli değil 
 let contentId = null; //TODO: Bundan kurtulmaya çalışıyorum ama kesin olacak mı belli değil
 
-let muteState = false;
-let videoState = true;
-var contentState = false;
-let screenState = false;
+let muteState = false;      //Benim mikrofonumun kapalı olup olmadığını tutar (kapalı -> true)
+let videoState = true;      //Benim Videomunaçık olup olmadığını tutar (kapalı -> false)
+let contentState = false;   //Benim sunup sunmadığımı tutar (kapalı -> false)
 
 let cameraStream = null; //TODO: cameraStream'in global kalmasına gereksiz olabilir, bunu denemelisin
 let captureStream = null; //TODO: captureStream'in global kalmasına gereksiz olabilir, bunu denemelisin
 
 let isContentExists = false;
 let isContentShown = false;
+let isMyComtent = false;
+
 let swipeEventFunction;
 var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
@@ -82,7 +83,7 @@ function signalContentShare(roomRef) {
         document.querySelector('#hangup-btn').addEventListener('click', async () => {
             console.log("Disconnecting");
             roomRef.collection('partyList').doc(nameId).delete();
-            if (screenState) {
+            if (contentState) {
                 roomRef.collection('partyList').doc(contentId).delete();
             }
         });

@@ -345,7 +345,7 @@ function addAllListener() {
     document.querySelector('#camera-options').addEventListener('click', cameraDropdown);
     document.getElementById("chat-btn").onclick = chatBtnListener;
     document.getElementById("users-btn").onclick = usersBtnListener;
-    document.getElementById("")
+    document.getElementById("record-btn").onclick = recordMeeting;
 
     // Tam ekrana geçmek için 
     //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.
