@@ -317,9 +317,6 @@ function restartConnection(peerConnection, roomRef, peerId) {
             snapshot.docChanges().forEach(change => {
                 if (change.type == 'removed') {
                     if (change.doc.data().display == 'content') {
-                        if (!isHandheld()) {
-                            document.getElementById('screenShareButton').classList.remove('hidden');
-                        }
                         isContentExists = false;
                         isContentShown = false;
                         document.removeEventListener('touchmove', swipeEventFunction);

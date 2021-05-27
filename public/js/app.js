@@ -279,9 +279,8 @@ async function createRoom() {
     document.querySelector('#shareButton').classList.remove("hidden");
     document.querySelector('#muteButton').classList.remove("hidden");
     document.querySelector('#joinBtn').classList.add("hidden");
-    if (!isHandheld()) {
-        document.querySelector('#screenShareButton').classList.remove("hidden");
-    }
+    document.querySelector('#screenShareButton').classList.remove("hidden");
+    
     const roomRef = await db.collection('rooms').doc();
     console.log("roomRef: ", roomRef);
 
@@ -336,9 +335,7 @@ async function joinRoomById(roomId) {
         document.querySelector('#createBtn').classList.add("hidden");
         document.querySelector('#joinBtn').classList.add("hidden");
         document.querySelector('#muteButton').classList.remove("hidden");
-        if (!isHandheld()) {
-            document.querySelector('#screenShareButton').classList.remove("hidden");
-        }
+        document.querySelector('#screenShareButton').classList.remove("hidden");
 
         nameId = await addUserToRoom(roomRef);
 
@@ -366,33 +363,15 @@ async function joinRoomById(roomId) {
     }
 }
 
-function init() {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    auth = firebase.auth();
-    
-    if (location.hostname === "localhost") {
-        db.useEmulator("localhost", "8080");
-        auth.useEmulator("localhost", "9099");
-    }
-
-    params = new URLSearchParams(location.search);
-    roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
-
-    getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
-    openUserMedia();
-
-    if (params.get('roomId')) {
-        console.log('Done');
-        document.querySelector('#room-id').value = params.get('roomId');
-        joinRoom();
-    }
+function addAllListener(params) {
     document.querySelector('#hangupBtn').addEventListener('click', hangUp);
     document.querySelector('#createBtn').addEventListener('click', createRoom);
     document.querySelector('#joinBtn').addEventListener('click', joinRoom);
     document.querySelector('#localVideoShowButton').addEventListener('click', showLocalVideo);
     document.querySelector('#cameraOptions').addEventListener('click', cameraDropdown);
 
+    // Tam ekrana geçmek için 
+    //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.
     let isFullscreen = false;
     document.getElementById('appFullscreenButton').addEventListener('click', () => {
         if (!isFullscreen) {
@@ -407,10 +386,36 @@ function init() {
             document.getElementById('appFullscreenButton').innerText = 'fullscreen';
         }
     })
-    hideNavBarOnTap();
+}
 
-    muteToggleEnable();
-    videoToggleEnable();
+function init() {
+    firebase.initializeApp(firebaseConfig);
+    db = firebase.firestore();
+    auth = firebase.auth();
+    
+    if (location.hostname === "localhost") {
+        db.useEmulator("localhost", "8080");
+        auth.useEmulator("localhost", "9099");
+    }
+
+    params = new URLSearchParams(location.search);
+    roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
+
+    getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
+    openUserMedia(); //kamera ve mikrofon'dan stream'i alıyoruz
+
+    if (params.get('roomId')) {
+        console.log('Done');
+        document.querySelector('#room-id').value = params.get('roomId');
+        joinRoom();
+    }
+
+    addAllListener(); // *Ekrandaki Butonların veya diğer objelerin dinleyicilerini yerleştiriyor
+
+    hideNavBarOnTap(); //ekranda biryere tıklandığında butonları kapatıyor, fonksiyon kendi içinde dinliyor.
+
+    muteToggleEnable(); //Mute butonunu dinliyor
+    videoToggleEnable(); //Video butonunu dinliyor
 
     var eventName = isiOS ? 'pagehide' : 'beforeunload';
 

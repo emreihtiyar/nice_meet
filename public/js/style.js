@@ -7,7 +7,7 @@ function enforceLayout(numberOfDisplayedPeers) {
     if (!isContentExists) {
         gridLayout(numberOfDisplayedPeers);
     } else {
-        if (isHandheld()) {
+        if (false) {
             isContentShown = true;
             document.getElementById('videos').setAttribute('class', '');
             document.getElementById('videos').classList.add('single_cell');
@@ -449,7 +449,7 @@ function enforceLayout_(numberOfDisplayedPeers) {
     if (!isContentExists) {
         enforceGridLayout(numberOfDisplayedPeers);
     } else {
-        if (isHandheld()) {
+        if (false) {
 
             isContentShown = true;
             let videoContainer = document.getElementById("video-container");
