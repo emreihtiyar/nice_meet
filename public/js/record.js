@@ -6,11 +6,10 @@ function recordStartOrStop() {
     if (isRecording && currentMediaRecorder != undefined) {
         stopRecord(currentMediaRecorder);
         isRecording = false;
-        currentMediaRecorder = undefined;
     }
     else{
         currentMediaRecorder = recordMeeting();
-        isRecording = false;
+        isRecording = true;
     }
 }
 

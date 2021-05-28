@@ -297,7 +297,6 @@ async function createRoom() {
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
     document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton(roomRef));
-    document.querySelector('#record-btn').addEventListener('click', () => startRecordForLocal());
 }
 
 function joinRoom() {
