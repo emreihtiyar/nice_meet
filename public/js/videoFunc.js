@@ -134,8 +134,12 @@ function videoStateChangeInFirebase(roomRef) {
 */
 function toggleOnContent(roomRef) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-    
-    document.getElementById('local-video').srcObject = captureStream;
+
+    screenVideo = document.getElementById('local-video').cloneNode();
+    screenVideo.id = "local-screen-video";
+    screenVideo.srcObject = captureStream;
+    document.getElementById('local-video-container').appendChild(screenVideo);
+
     document.getElementById('screen-share-btn').innerText = "stop_screen_share";
     document.getElementById('screen-share-btn').classList.add('toggle');
     signalContentShare(roomRef);
@@ -157,7 +161,8 @@ function contentToggleOff(roomRef) {
     
     roomRef.collection('partyList').doc(contentId).delete();
     stopCapture(captureStream);
-    document.getElementById('local-video').srcObject = cameraStream;
+    //document.getElementById('local-video').srcObject = cameraStream;
+    document.getElementById('local-screen-video').remove();
     contentState = false;
     document.getElementById('screen-share-btn').innerText = 'screen_share';
     document.getElementById('screen-share-btn').classList.remove('toggle');

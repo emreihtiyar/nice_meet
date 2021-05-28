@@ -7,52 +7,9 @@ function enforceLayout(numberOfDisplayedPeers) {
     if (!isContentExists) {
         gridLayout(numberOfDisplayedPeers);
     } else {
-        if (false) {
-            isContentShown = true;
-            document.getElementById('videos').setAttribute('class', '');
-            document.getElementById('videos').classList.add('single_cell');
-            document.getElementsByClassName('contentContainer')[0].classList.remove('hidden');
-            document.querySelectorAll('.video-box').forEach(elem => {
-                if (!elem.classList.contains('contentContainer')) {
-                    elem.classList.add('hidden');
-                }
-            });
-            
-            let swipeDone = false;
-            let lastY = 120;
-            let lastX = 120;
-            let currentX = 120;
-            var currentY = 120;
-
-            var touchInitiation = (e) => {
-                lastX = e.touches[0].clientX;
-                lastY = e.touches[0].clientY;
-            }
-
-            var detectSwipe = (e) => {
-                currentY = e.touches[0].clientY;
-                currentX = e.touches[0].clientX;
-                swipeDone = true;
-            }
-
-            document.removeEventListener('touchend', swipeEventFunction);
-            swipeEventFunction = function () {
-                if (swipeDone && Math.abs(lastX - currentX) > 50 && Math.abs(lastY - currentY) < 50) {
-                    swipeDone = false;
-                    swipeContent();
-                }
-                console.log('currentY ' + currentY + 'Last Y ' + lastY);
-                console.log('currentX ' + currentX + 'Last X ' + lastX);
-            }
-
-            document.addEventListener('touchstart', (e) => touchInitiation(e), false);
-            document.addEventListener('touchmove', (e) => detectSwipe(e), false);
-            document.addEventListener('touchend', swipeEventFunction, false);
-        } else {
-            document.getElementById('videos').setAttribute('class', '');
-            document.getElementById('videos').classList.add('sixteen_cell');
-            document.getElementById('local-video-container').classList.remove('sideLocalVideo');
-        }
+        document.getElementById('videos').setAttribute('class', '');
+        document.getElementById('videos').classList.add('sixteen_cell');
+        document.getElementById('local-video-container').classList.remove('sideLocalVideo');
     }
 }
 
@@ -117,6 +74,7 @@ function createPeerVideo(peerId, isPeerContent) {
 
     peerNode.classList.remove('sideLocalVideo');
     peerNode.classList.remove('relaxedHidden');
+
     if (isPeerContent) {
         let inFullscreen = false;
         isContentShown = true;
@@ -134,7 +92,8 @@ function createPeerVideo(peerId, isPeerContent) {
             }
         });
     }
-
+    
+    console.log(peerNode);
     document.getElementById('videos').appendChild(peerNode);
 
     document.getElementById('video' + peerId).srcObject = new MediaStream();

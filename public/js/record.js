@@ -25,7 +25,7 @@ function recordMeeting() {
 
     } else {
         if (contentState) { //Ben sunum yapıyor muyum?
-            let contentVideo = document.getElementById("local-video");
+            let contentVideo = document.getElementById("local-screen-video");
             let cameraVideo = document.getElementById("local-video");
 
             return recordStartOnCanvas([contentVideo, cameraVideo], true);
