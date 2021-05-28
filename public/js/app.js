@@ -41,7 +41,6 @@ let captureStream = null; //TODO: captureStream'in global kalmasına gereksiz ol
 
 let isContentExists = false;
 let isContentShown = false;
-let isMyComtent = false;
 
 let swipeEventFunction;
 var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -169,7 +168,7 @@ function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
                     isSenderContent = true;
                     document.getElementById('screen-share-btn').classList.add('hidden');
                 }
-                console.log('Is sender content' + isSenderContent);
+                console.log('Is sender content ' + isSenderContent);
                 await peerAcceptConnection(change.doc.id, roomRef, nameId, isSenderContent, isReceiverContent);
             } else {
                 console.log("Mesh has been setup.");
@@ -328,6 +327,7 @@ async function joinRoomById(roomId) {
         document.querySelector('#join-btn').classList.add("hidden");
         document.querySelector('#mute-btn').classList.remove("hidden");
         document.querySelector('#screen-share-btn').classList.remove("hidden");
+        document.querySelector('#record-btn').classList.remove("hidden"); //TODO: KAtılanlar kaydetmese daha iyi olabilir.
 
         nameId = await addUserToRoom(roomRef);
 

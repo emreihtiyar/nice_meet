@@ -1,17 +1,49 @@
 let recordedChunks = [];
 let isRecording = false
+let currentMediaRecorder;
 
-
-function recordMeeting() {
-    console.log("recording :)");
-
-    if (isContentExists) {
-        
-    } else {
-        
+function recordStartOrStop() {
+    if (isRecording && currentMediaRecorder != undefined) {
+        stopRecord(currentMediaRecorder);
+        isRecording = false;
+        currentMediaRecorder = undefined;
+    }
+    else{
+        currentMediaRecorder = recordMeeting();
+        isRecording = false;
     }
 }
 
+function recordMeeting() {
+    console.log("recording :)");
+    
+    if (isContentExists && isContentShown) { //Başkası şuanda sunum yapıyor mu?
+        //TODO: Burada local yerine sunan kişinin videosu alınacak
+        let contentVideo = document.querySelector(".contentContainer").children[0];
+        let cameraVideo = document.getElementById("local-video");
+        
+        return recordStartOnCanvas([contentVideo, cameraVideo], true);
+
+    } else {
+        if (contentState) { //Ben sunum yapıyor muyum?
+            let contentVideo = document.getElementById("local-video");
+            let cameraVideo = document.getElementById("local-video");
+
+            return recordStartOnCanvas([contentVideo, cameraVideo], true);
+        }else{ //Hiç sunum yok
+            let videos = [];
+            let htmlCol = document.getElementsByTagName("video");
+
+            for (let i = 0; i < htmlCol.length; i++) {
+                videos.push(htmlCol.item(i));
+            }
+
+            return recordStartOnCanvas(videos, false);
+        }
+    }
+}
+
+//! record Start and Stop functions and functions required for the start and end function
 function handleDataAvailable(event) {
     console.log("data-available");
     if (event.data.size > 0) {
@@ -38,13 +70,13 @@ function download() {
     window.URL.revokeObjectURL(url);
 }
 
-function stopRecordForLocal(mediaRecorder) {
+function stopRecord(mediaRecorder) {
     console.log("stopping");
     mediaRecorder.stop();
     clearCanvas();
 }
 
-function startRecordForLocal(stream) {
+function startRecordAtStream(stream) {
     let options = { mimeType: "video/webm; codecs=vp9" };
     mediaRecorder = new MediaRecorder(stream, options);
     mediaRecorder.ondataavailable = handleDataAvailable;
@@ -52,46 +84,23 @@ function startRecordForLocal(stream) {
     return mediaRecorder;
 }
 
-function testLocalRecord(stream, sec) {
-    if (sec == undefined || sec == null) {
-        sec = 60;
-    }
-    mediaRecorder = startRecordForLocal(stream);
-    setTimeout(event => {
-        console.log("stopping");
-        stopRecordForLocal(mediaRecorder);
-    }, sec*1000);
-}
-
-
-function recordCanvas(videoIDs, isContentExists) {
-    let canvas = startCanvas(videoIDs, isContentExists);
+function recordStartOnCanvas(videos, isContentExists) {
+    let canvas = startCanvas(videos, isContentExists);
     let canvasStream = canvas.captureStream(30);
 
-    videoIDs.forEach(element => {
-        canvasStream.addTrack(document.getElementById(element).srcObject.getAudioTracks()[0]);
+    videos.forEach(element => {
+        if(element.srcObject.getAudioTracks()[0]){
+            canvasStream.addTrack(element.srcObject.getAudioTracks()[0]);
+        }
     });
 
-    testLocalRecord(canvasStream, 10);
+    return startRecordAtStream(canvasStream);
 }
 
-
-function startCanvas(videoIDs, isContentExists) {
-/*
-    let screenVideo = document.createElement("VIDEO");
-    screenVideo.srcObject = new MediaStream();
-    let cameraVideo = document.createElement("VIDEO");
-    cameraVideo.srcObject = new MediaStream();
-    document.body.appendChild(cameraVideo);
-    document.body.appendChild(screenVideo);
-*/
+//! Canvas functions -> drawing videos and clear
+function startCanvas(videos, isContentExists) {
     let canvas = document.getElementById("record-canvas");
     let context = canvas.getContext("2d");
-    let videos = [];
-
-    videoIDs.forEach(element => {
-        videos.push(document.getElementById(element));
-    });
     console.log("videos:", videos);
 
     if (isContentExists) {
@@ -143,4 +152,18 @@ function drawVideosNoContent(context, videos, canvasWidth, canvasHeight) {
         context.drawImage(videos[3], canvasWidth/2+1, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
         setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
     }
+}
+
+
+
+//! Test Func 
+function testLocalRecord(stream, sec) {
+    if (sec == undefined || sec == null) {
+        sec = 60;
+    }
+    mediaRecorder = startRecordAtStream(stream);
+    setTimeout(event => {
+        console.log("stopping");
+        stopRecord(mediaRecorder);
+    }, sec*1000);
 }
