@@ -207,9 +207,9 @@ async function openUserMedia() {
             facingMode: "user"
         },
         audio: {
-            echoCancellation: false,    //TODO: fixme-düzelt -> true olmalı
-            noiseSuppression: false,    //TODO: fixme-düzelt -> true olmalı
-            autoGainControl: false,     //TODO: fixme-düzelt -> true olmalı
+            echoCancellation: true,    //TODO: fixme-düzelt -> true olmalı
+            noiseSuppression: true,    //TODO: fixme-düzelt -> true olmalı
+            autoGainControl: true,     //TODO: fixme-düzelt -> true olmalı
         }
     });
 
@@ -321,12 +321,14 @@ async function joinRoomById(roomId) {
             window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`, "_blank");
         };
 
-        document.querySelector('#share-btn').classList.remove("hidden");
+        //document.querySelector('#share-btn').classList.remove("hidden"); //TODO: Host olmayanlar bu odayayı paylaşabilmeli mi?
         document.querySelector('#create-btn').classList.add("hidden");
         document.querySelector('#join-btn').classList.add("hidden");
         document.querySelector('#mute-btn').classList.remove("hidden");
         document.querySelector('#screen-share-btn').classList.remove("hidden");
-        document.querySelector('#record-btn').classList.remove("hidden"); //TODO: KAtılanlar kaydetmese daha iyi olabilir.
+        document.querySelector('#chat-btn').classList.remove("hidden");
+        document.querySelector('#users-btn').classList.remove("hidden");
+        //document.querySelector('#record-btn').classList.remove("hidden"); //TODO: Katılanlar kaydetmese daha iyi olabilir.
 
         nameId = await addUserToRoom(roomRef);
 

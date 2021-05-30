@@ -320,6 +320,7 @@ function restartConnection(peerConnection, roomRef, peerId) {
                         isContentExists = false;
                         isContentShown = false;
                         document.removeEventListener('touchmove', swipeEventFunction);
+                        document.getElementById("screen-share-btn").classList.remove("hidden");
                     }
                     peerConnection.close();
                     if (document.getElementById("video" + peerId + "Container") != null) {

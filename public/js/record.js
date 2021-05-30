@@ -126,7 +126,8 @@ function drawVideosWithContent(context, contentVideo, cameraVideo, canvasWidth, 
     }
     context.drawImage(contentVideo, 0, 0, other[0], other[1]);
     context.drawImage(cameraVideo, other[0]+1, (other[1]/2)-(other[3]/2), other[2], other[3]);
-    setTimeout(drawVideosWithContent, 10, context, contentVideo, cameraVideo, canvasWidth, canvasHeight, other);
+    //setTimeout(drawVideosWithContent, 10, context, contentVideo, cameraVideo, canvasWidth, canvasHeight, other);
+    setTimeout(collectVideos, 10, context, canvasWidth, canvasHeight);
 }
 
 function drawVideosNoContent(context, videos, canvasWidth, canvasHeight) {
@@ -134,26 +135,49 @@ function drawVideosNoContent(context, videos, canvasWidth, canvasHeight) {
 
     if (nVideos == 1) {
         context.drawImage(videos[0], 1, 1, canvasWidth-1, canvasHeight-1);
-        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
     }else if (nVideos == 2) {
         context.drawImage(videos[0], 0, 0, canvasWidth/2, canvasHeight);
         context.drawImage(videos[1], canvasWidth/2+1, 0, canvasWidth/2, canvasHeight);
-        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
     }else if (nVideos == 3) {
         context.drawImage(videos[0], 0, 0, canvasWidth/2-1, canvasHeight/2-1);
         context.drawImage(videos[1], canvasWidth/2+1, 0, canvasWidth/2, canvasHeight/2-1);
         context.drawImage(videos[2], 0, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
-        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
     }else if (nVideos == 4) {
         context.drawImage(videos[0], 0, 0, canvasWidth/2-1, canvasHeight/2-1);
         context.drawImage(videos[1], canvasWidth/2+1, 0, canvasWidth/2, canvasHeight/2-1);
         context.drawImage(videos[2], 0, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
         context.drawImage(videos[3], canvasWidth/2+1, canvasHeight/2+1, canvasWidth/2, canvasHeight/2-1);
-        setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
     }
+    //setTimeout(drawVideosNoContent, 10, context, videos, canvasWidth, canvasHeight);
+    setTimeout(collectVideos, 10, context, canvasWidth, canvasHeight);
 }
 
+function collectVideos(context, canvasWidth, canvasHeight) {
+    context.clearRect(0, 0, canvasWidth, canvasHeight);
 
+    if (isContentExists && isContentShown) { //Başkası şuanda sunum yapıyor mu?
+        //TODO: Burada local yerine sunan kişinin videosu alınacak
+        let contentVideo = document.querySelector(".contentContainer").children[0];
+        let cameraVideo = document.getElementById("local-video");
+        drawVideosWithContent(context, contentVideo, cameraVideo, canvasWidth, canvasHeight);
+    } else {
+        if (contentState) { //Ben sunum yapıyor muyum?
+            let contentVideo = document.getElementById("local-screen-video");
+            let cameraVideo = document.getElementById("local-video");
+
+            drawVideosWithContent(context, contentVideo, cameraVideo, canvasWidth, canvasHeight);
+        }else{ //Hiç sunum yok
+            let videos = [];
+            let htmlCol = document.getElementsByTagName("video");
+
+            for (let i = 0; i < htmlCol.length; i++) {
+                videos.push(htmlCol.item(i));
+            }
+
+            drawVideosNoContent(context, videos, canvasWidth, canvasHeight);
+        }
+    }
+}
 
 //! Test Func 
 function testLocalRecord(stream, sec) {
