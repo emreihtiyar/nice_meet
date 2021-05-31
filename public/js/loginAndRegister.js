@@ -15,10 +15,26 @@ var auth;
 let roomPage = "room.html"
 
 function register() {
-   let name = document.querySelector('#registerName').value;
-   let email = document.querySelector('#registerEmail').value;
-   let password = document.querySelector('#registerPass').value;
-   console.log("name:",name,"email:",email,"password:",password);
+   let name = document.querySelector('#register-name').value;
+   let email = document.querySelector('#register-email').value;
+   let password = document.querySelector('#register-pass').value;
+   
+   console.log("name:",name,"email:",email,"password:",password)
+
+   if (name == undefined || name == null || name == "") {
+      createSideAlert("İsim alanı boş bırakılamaz.", "warning", 3);
+      markTag("register-name");
+      return;
+   } else if (email == undefined || email == null || email == "") {
+      createSideAlert("Email alanı boş bırakılamaz.", "warning", 3);
+      markTag("register-email");
+      return;
+   } else if (password == undefined || password == null || password == "") {
+      createSideAlert("Şifre alanı boş bırakılamaz.", "warning", 3);
+      markTag("register-pass");
+      return;
+   }
+
 
    auth.createUserWithEmailAndPassword(email,password)
       .then(function (userCredential) {
@@ -26,41 +42,71 @@ function register() {
          let userId = userCredential.user.uid;
          console.log("userID:",userId);
 
-         const userRef = db.collection('users').doc(`${userId}`);
-         userRef.set({
+         db.collection('users').doc(`${userId}`).set({
             'name': userId,
             'username':name, 
             'email':email, 
             'password':password 
          });
 
-         login(email,password);
+         createSideAlert("Kullanıcı Oluşturuldu, Yönlendiriliyorsunuz", "success", 5);
+
+         login(null, email,password);
       })
       .catch(function (error) {
          // Handle Errors here.
          let errorCode = error.code;
          let errorMessage = error.message;
-         if (errorCode === 'auth/wrong-password') {
+
+         if (errorCode === 'auth/wrong-password' || errorCode === "auth/weak-password") {
             console.log("wrongPassword");
-            //alert('Wrong password.');
+            createSideAlert("Şifreniz 6 karakterden uzun olmalıdır", "warning", 5);
+            markTag("register-pass")
+         } else if(errorCode === "auth/invalid-email"){
+            console.log("invalid email format");
+            createSideAlert("Epostanızı doğru yazdığınızdan emin olun", "warning", 5);
+            markTag("register-email");
+         } else if(errorCode === "auth/email-already-in-use"){
+            console.log("auth/email-already-in-use");
+            createSideAlert("Bu E-posta kullanımda", "warning", 5);
+            markTag("register-email");
          } else {
             console.log("error:",errorMessage);
-            //alert(errorMessage);
+            createSideAlert(errorMessage,"warning", 5);
          }
+         
          console.log(error);
       });
 }
 
-function login() {
-   let email = document.querySelector('#loginEmail').value;
-   let password = document.querySelector('#loginPass').value;
+function login(event, email, password) {
+   console.log(event);
+   if (email == undefined || email == null || password == undefined || password == null) {
+      email = document.querySelector('#login-email').value;
+      password = document.querySelector('#login-pass').value;
+   }
+
    console.log("email:",email,"password:",password);
+   
+   if (email == undefined || email == null || email == "") {
+      createSideAlert("Email alanı boş bırakılamaz.", "warning", 3);
+      markTag("login-email");
+      return;
+   } else if (password == undefined || password == null || password == "") {
+      createSideAlert("Şifre alanı boş bırakılamaz.", "warning", 3);
+      markTag("login-pass");
+      return;
+   }
+
+   
    auth.signInWithEmailAndPassword(email, password)
       .then(function (userCredential) {
+         createSideAlert("Giriş Başarılı, Yönlendiriliyorsunuz", "success", 5);
+         
          console.log(userCredential);
          let userId = userCredential.user.uid;
          console.log("userID:",userId);
-
+         
          //Login tamamlandı, o zaman görüntülü görüşme sayfasına yönlendirelim
          if (params.get('roomId')) {
             let roomID = params.get('roomId');
@@ -72,15 +118,31 @@ function login() {
       })
       .catch(function (error) {
          // Handle Errors here.
-         var errorCode = error.code;
-         var errorMessage = error.message;
-         if (errorCode === 'auth/wrong-password') {
+         let errorCode = error.code;
+         let errorMessage = error.message;
+
+         if (errorCode === 'auth/wrong-password' || errorCode === "auth/weak-password") {
             console.log("wrongPassword");
-            //alert('Wrong password.');
+            createSideAlert("Hatalı Şifre girdiniz", "warning", 5);
+            markTag("login-pass")
+         } else if(errorCode === "auth/invalid-email"){
+            console.log("invalid email format");
+            createSideAlert("Epostanızı doğru yazdığınızdan emin olun", "warning", 5);
+            markTag("login-email");
+         } else if(errorCode === "auth/email-already-in-use"){
+            console.log("auth/email-already-in-use");
+            createSideAlert("Bu E-posta kullanımda", "warning", 5);
+            markTag("login-email");
+         } else if(errorCode === "auth/user-not-found"){
+            console.log("auth/user-not-found");
+            createSideAlert("Böyle bir kullanıcı bulunamadı", "warning", 5);
+            markTag("login-email");
+            markTag("login-pass");
          } else {
             console.log("error:",errorMessage);
-            //alert(errorMessage);
+            createSideAlert(errorMessage,"warning", 5);
          }
+         
          console.log(error);
       });
 }
@@ -110,12 +172,12 @@ function init() {
 
    params = new URLSearchParams(location.search);
 
-   document.querySelector('#registerBtn').addEventListener('click', register);
-   document.querySelector('#loginBtn').addEventListener('click', login);
+   document.querySelector('#register-btn').addEventListener('click', register);
+   document.querySelector('#login-btn').addEventListener('click', login);
 }
 
 init();
 
-$('p[class ="message"]').not('a[id="changePass"]').click(function(){
+$('p[class ="message"]').not('a[id="change-pass"]').click(function(){
    $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
 });

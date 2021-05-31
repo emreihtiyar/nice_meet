@@ -256,12 +256,39 @@ function changeUserBubbleDetails(uid, muteState, cameraState) { //document.query
     }
 }
 
-function mouseMoveListener() {
-        document.getElementById("button-container").style.display = "block";
-        setTimeout(event => {
-            console.log("Buton bar Hidding");
-            document.getElementById("button-container").style.display = "none";
-        },5000);
+function createSideAlert(message, type, sec=5, link) {
+    let alert = document.createElement("div");
+    alert.innerText = message;
+    alert.role= "alert";
+    switch (type) {
+        case "primary":
+            alert.classList = "side-alert alert-primary";
+            break;
+        case "warning":
+            alert.classList = "side-alert alert-warning";
+            break;
+        case "success":
+            alert.classList = "side-alert alert-success";
+            break;
+        default:
+            alert.classList = "side-alert alert-primary";
+            break;
+    }
+    document.getElementById("side-alert-container").appendChild(alert);
+
+    setTimeout(() => { 
+        alert.remove(); 
+        if (link != undefined) {
+            window.location.href =link;
+        }
+    }, (sec*1000));
+}
+
+function markTag(elementID) {
+    document.getElementById(elementID).classList.add("border-red");
+    setTimeout(() => { 
+        document.getElementById(elementID).classList.remove("border-red");
+    }, 3000);
 }
 
 function chatBtnListener() {
@@ -484,9 +511,12 @@ function enforceLayout_(numberOfDisplayedPeers) {
             document.getElementById('local-video-container').classList.remove('side-local-video');
         }
     }
+*/
 
-
-
-
-
-    */
+function mouseMoveListener() {
+    document.getElementById("button-container").style.display = "block";
+    setTimeout(event => {
+        console.log("Buton bar Hidding");
+        document.getElementById("button-container").style.display = "none";
+    },5000);
+}

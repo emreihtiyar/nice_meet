@@ -1,40 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-  
-  <head>
-    <meta charset="UTF-8">
-    <title>Nice Meet</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900'>
-    <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat:400,700'>
-    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
-    <link rel="stylesheet" href="css/loginAndRegister.css">
-    
-  </head>
-  
-  <body>
-    <!-- partial:index.partial.html -->
-    <div class="container">
-      <div class="info">
-        <h1>Log in</h1>
-      </div>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Nice Meet</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,500,700,900'>
+  <link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Montserrat:400,700'>
+  <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css'>
+  <link rel="stylesheet" href="css/loginAndRegister.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <!-- partial:index.partial.html -->
+  <div class="login-container">
+    <div class="info">
+      <h1>Nice Meet</h1>
     </div>
     <div class="form">
       <div class="thumbnail"><img src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/169963/hat.svg" /></div>
-      <form class="register-form"> <!-- REGİSTER FORM-->
-        <input id="registerName" type="text" placeholder="name" />
-        <input id="registerEmail" type="email" placeholder="email address" />
-        <input id="registerPass" type="password" placeholder="password" />
-        <button form="register-from" type="submit" id="registerBtn" >Create User</button>
-      <p class="message">Already registered? <a id="alreadyRegistered">Sign In</a></p>
-    </form>
-    <form class="login-form"> <!-- LOGİN FORM-->
-      <input id="loginEmail" type="text" placeholder="Email" />
-      <input id="loginPass" type="password" placeholder="password" />
-      <button form="login-from" id="loginBtn" >Login</button>
-      <p class="message">Not registered? <a id="createAccount">Create an account</a></p>
-      <p class="message">Forgot Password? <a id="changePass" >Change Password</a></p>
-    </form>
+      <form class="register-form">
+        <!-- REGİSTER FORM-->
+        <input id="register-name" type="text" placeholder="Kullanıcı ismi" />
+        <input id="register-email" type="email" placeholder="Eposta adresi" />
+        <input id="register-pass" type="password" placeholder="Şifre" />
+        <button form="register-from" type="submit" id="register-btn">Kullanıcı Oluştur</button>
+        <p class="message">Zaten bir kaydın var mı? <a id="already-registered">Giriş yap</a></p>
+      </form>
+      <form class="login-form">
+        <!-- LOGİN FORM-->
+        <input id="login-email" type="email" placeholder="Eposta" />
+        <input id="login-pass" type="password" placeholder="Şifre" />
+        <button form="login-from" id="login-btn">Giriş Yap</button>
+        <p class="message">Kayıtlı değil misin? <a id="create-account">Şimdi Kaydol</a></p>
+        <p class="message">Şifreni hatırlamıyor musun? <a id="change-pass">Şifre Sıfırla</a></p>
+      </form>
+    </div>
+  </div>
+  <div id="side-alert-container" class="side-alert-container">
+  <!--
+    <div class="side-alert side-alert-primary" role="alert">
+      A simple primary alert—check it out!
+    </div>
+    <div class="side-alert side-alert-warning" role="alert">
+      A simple warning alert—check it out!
+    </div> 
+  -->
   </div>
   <!-- partial -->
   <script src="https://www.gstatic.com/firebasejs/8.5.0/firebase-app.js"></script>
@@ -50,9 +62,10 @@
     <script defer src="/__/firebase/init.js"></script>
 -->
   <!--init added to cdn firebase apps-->
-  
+
   <script src="js/loginAndRegister.js"></script>
-  
+  <script src="js/style.js"></script>
+
 </body>
 
 </html>
