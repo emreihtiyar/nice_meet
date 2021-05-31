@@ -211,7 +211,11 @@ async function openUserMedia() {
             noiseSuppression: true,    //TODO: fixme-düzelt -> true olmalı
             autoGainControl: true,     //TODO: fixme-düzelt -> true olmalı
         }
-    });
+    }).catch(error => {
+        console.log("kamera açma hatası");
+        console.error("kamera açma hatası: ", error);
+        videoToggleEnable();
+    });;
 
     document.querySelector('#local-video').srcObject = cameraStream;
     document.querySelector('#local-video').muted = true;

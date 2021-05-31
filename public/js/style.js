@@ -333,6 +333,7 @@ function addAllListener() {
     document.getElementById("users-btn").onclick = usersBtnListener;
     document.getElementById("record-btn").onclick = recordStartOrStop;
 
+
     // Tam ekrana geçmek için 
     //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.
     let isFullscreen = false;
