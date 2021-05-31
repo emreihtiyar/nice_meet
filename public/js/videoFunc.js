@@ -137,6 +137,7 @@ function toggleOnContent(roomRef) {
 
     screenVideo = document.getElementById('local-video').cloneNode();
     screenVideo.id = "local-screen-video";
+    screenVideo.muted = true;
     screenVideo.srcObject = captureStream;
     document.getElementById('local-video-container').appendChild(screenVideo);
 

@@ -18,7 +18,7 @@ function recordMeeting() {
     
     if (isContentExists && isContentShown) { //Başkası şuanda sunum yapıyor mu?
         //TODO: Burada local yerine sunan kişinin videosu alınacak
-        let contentVideo = document.querySelector(".contentContainer").children[0];
+        let contentVideo = document.querySelector(".content-container").children[0];
         let cameraVideo = document.getElementById("local-video");
         
         return recordStartOnCanvas([contentVideo, cameraVideo], true);
@@ -157,7 +157,7 @@ function collectVideos(context, canvasWidth, canvasHeight) {
 
     if (isContentExists && isContentShown) { //Başkası şuanda sunum yapıyor mu?
         //TODO: Burada local yerine sunan kişinin videosu alınacak
-        let contentVideo = document.querySelector(".contentContainer").children[0];
+        let contentVideo = document.querySelector(".content-container").children[0];
         let cameraVideo = document.getElementById("local-video");
         drawVideosWithContent(context, contentVideo, cameraVideo, canvasWidth, canvasHeight);
     } else {

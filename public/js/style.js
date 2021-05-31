@@ -9,13 +9,13 @@ function enforceLayout(numberOfDisplayedPeers) {
     } else {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('sixteen_cell');
-        document.getElementById('local-video-container').classList.remove('sideLocalVideo');
+        document.getElementById('local-video-container').classList.remove('side-local-video');
     }
 }
 
 function gridLayout(numberOfDisplayedPeers) {
     document.querySelectorAll('.video-box').forEach(elem => {
-        if (!elem.classList.contains('contentContainer')) {
+        if (!elem.classList.contains('content-container')) {
             elem.classList.remove('hidden');
         }
     });
@@ -23,42 +23,42 @@ function gridLayout(numberOfDisplayedPeers) {
     if (numberOfDisplayedPeers == 1) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('single_cell');
-        document.getElementById('local-video-container').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('side-local-video');
     } else if (numberOfDisplayedPeers == 2) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('two_cell');
-        document.getElementById('local-video-container').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('side-local-video');
     } else if (numberOfDisplayedPeers > 2 && numberOfDisplayedPeers <= 4) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('four_cell');
-        document.getElementById('local-video-container').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('side-local-video');
     } else if (numberOfDisplayedPeers > 4 && numberOfDisplayedPeers <= 9) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('nine_cell');
-        document.getElementById('local-video-container').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('side-local-video');
     } else if (numberOfDisplayedPeers > 9) {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('sixteen_cell');
-        document.getElementById('local-video-container').classList.add('sideLocalVideo');
+        document.getElementById('local-video-container').classList.add('side-local-video');
     } else {
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('single_cell');
-        document.getElementById('local-video-container').classList.remove('sideLocalVideo');
+        document.getElementById('local-video-container').classList.remove('side-local-video');
     }
 }
 
 function swipeContent() {
     if (isContentShown) {
         isContentShown = false;
-        document.getElementsByClassName('contentContainer')[0].classList.add('hidden');
+        document.getElementsByClassName('content-container')[0].classList.add('hidden');
         gridLayout(numberOfDisplayedPeers - 1);
     } else {
         isContentShown = true;
         document.getElementById('videos').setAttribute('class', '');
         document.getElementById('videos').classList.add('single_cell');
-        document.getElementsByClassName('contentContainer')[0].classList.remove('hidden');
+        document.getElementsByClassName('content-container')[0].classList.remove('hidden');
         document.querySelectorAll('.video-box').forEach(elem => {
-            if (!elem.classList.contains('contentContainer')) {
+            if (!elem.classList.contains('content-container')) {
                 elem.classList.add('hidden');
             }
         });
@@ -72,14 +72,14 @@ function createPeerVideo(peerId, isPeerContent) {
     peerNode.id = 'video' + peerId + 'Container';
     peerNode.firstElementChild.id = 'video' + peerId;
 
-    peerNode.classList.remove('sideLocalVideo');
-    peerNode.classList.remove('relaxedHidden');
+    peerNode.classList.remove('side-local-video');
+    peerNode.classList.remove('relaxed-hidden');
 
     if (isPeerContent) {
         let inFullscreen = false;
         isContentShown = true;
         isContentExists = true;
-        peerNode.classList.add('contentContainer');
+        peerNode.classList.add('content-container');
         peerNode.addEventListener('click', () => {
             if (inFullscreen) {
                 inFullscreen = false;
@@ -128,14 +128,14 @@ function closeFullscreen() {
 function hideLocalVideo() {
     if (numberOfDisplayedPeers > 0) {
         localVideoElem = document.getElementById('local-video-container');
-        localVideoElem.classList.add('relaxedHidden');
+        localVideoElem.classList.add('relaxed-hidden');
         document.getElementById('local-video-show-btn').classList.remove('hidden'); 
     }
 }
 
 function showLocalVideo() {
     localVideoElem = document.getElementById('local-video-container');
-    localVideoElem.classList.remove('relaxedHidden');
+    localVideoElem.classList.remove('relaxed-hidden');
     document.getElementById('local-video-show-btn').classList.add('hidden'); 
 }
 
@@ -391,7 +391,7 @@ function addContentVideo(contentSource) {
 
 function enforceGridLayout(numberOfDisplayedPeers) {
     /*document.querySelectorAll('.video-box').forEach(elem => {
-        if (!elem.classList.contains('contentContainer')) {
+        if (!elem.classList.contains('content-container')) {
             elem.classList.remove('hidden');
         }
     });*/
@@ -441,9 +441,9 @@ function enforceLayout_(numberOfDisplayedPeers) {
             isContentShown = true;
             document.getElementById('videos').setAttribute('class', '');
             document.getElementById('videos').classList.add('single_cell');
-            document.getElementsByClassName('contentContainer')[0].classList.remove('hidden');
+            document.getElementsByClassName('content-container')[0].classList.remove('hidden');
             document.querySelectorAll('.video-box').forEach(elem => {
-                if (!elem.classList.contains('contentContainer')) {
+                if (!elem.classList.contains('content-container')) {
                     elem.classList.add('hidden');
                 }
             });
@@ -481,7 +481,7 @@ function enforceLayout_(numberOfDisplayedPeers) {
         } else {
             document.getElementById('videos').setAttribute('class', '');
             document.getElementById('videos').classList.add('sixteen_cell');
-            document.getElementById('local-video-container').classList.remove('sideLocalVideo');
+            document.getElementById('local-video-container').classList.remove('side-local-video');
         }
     }
 

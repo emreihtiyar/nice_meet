@@ -209,23 +209,24 @@ body {
     display: none;
 }
 
-.relaxedHidden {
+.relaxed-hidden {
     visibility: hidden;
 }
 
-.sideLocalVideo {
+.side-local-video {
     position: fixed;
     right: 1vw;
     bottom: 1vh;
     z-index: 1;
 }
 
-.sideLocalVideo video {
-    width: 15vw;
-    height: auto;
+.side-local-video video {
+    width: 16vw;
+    height: 9vw;
+    
 }
 
-.contentContainer {
+.content-container {
     grid-column: 1 / 4;
     grid-row: 1 / 4;
 }

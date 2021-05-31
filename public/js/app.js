@@ -214,6 +214,7 @@ async function openUserMedia() {
     });
 
     document.querySelector('#local-video').srcObject = cameraStream;
+    document.querySelector('#local-video').muted = true;
 
     console.log('Stream:', document.querySelector('#local-video').srcObject);
     document.querySelector('#join-btn').classList.remove("hidden");
