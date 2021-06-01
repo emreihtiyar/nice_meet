@@ -23,15 +23,15 @@ function register() {
 
    if (name == undefined || name == null || name == "") {
       createSideAlert("İsim alanı boş bırakılamaz.", "warning", 3);
-      highlightElement("register-name");
+      highlightElement("register-name", 5);
       return;
    } else if (email == undefined || email == null || email == "") {
       createSideAlert("Email alanı boş bırakılamaz.", "warning", 3);
-      highlightElement("register-email");
+      highlightElement("register-email", 5);
       return;
    } else if (password == undefined || password == null || password == "") {
       createSideAlert("Şifre alanı boş bırakılamaz.", "warning", 3);
-      highlightElement("register-pass");
+      highlightElement("register-pass", 5);
       return;
    }
 
@@ -61,15 +61,15 @@ function register() {
          if (errorCode === 'auth/wrong-password' || errorCode === "auth/weak-password") {
             console.log("wrongPassword");
             createSideAlert("Şifreniz 6 karakterden uzun olmalıdır", "warning", 5);
-            highlightElement("register-pass")
+            highlightElement("register-pass", 5)
          } else if(errorCode === "auth/invalid-email"){
             console.log("invalid email format");
             createSideAlert("Epostanızı doğru yazdığınızdan emin olun", "warning", 5);
-            highlightElement("register-email");
+            highlightElement("register-email", 5);
          } else if(errorCode === "auth/email-already-in-use"){
             console.log("auth/email-already-in-use");
             createSideAlert("Bu E-posta kullanımda", "warning", 5);
-            highlightElement("register-email");
+            highlightElement("register-email", 5);
          } else {
             console.log("error:",errorMessage);
             createSideAlert(errorMessage,"warning", 5);
@@ -90,11 +90,11 @@ function login(event, email, password) {
    
    if (email == undefined || email == null || email == "") {
       createSideAlert("Email alanı boş bırakılamaz.", "warning", 3);
-      highlightElement("login-email");
+      highlightElement("login-email", 5);
       return;
    } else if (password == undefined || password == null || password == "") {
       createSideAlert("Şifre alanı boş bırakılamaz.", "warning", 3);
-      highlightElement("login-pass");
+      highlightElement("login-pass", 5);
       return;
    }
 
@@ -124,20 +124,20 @@ function login(event, email, password) {
          if (errorCode === 'auth/wrong-password' || errorCode === "auth/weak-password") {
             console.log("wrongPassword");
             createSideAlert("Hatalı Şifre girdiniz", "warning", 5);
-            highlightElement("login-pass")
+            highlightElement("login-pass", 5)
          } else if(errorCode === "auth/invalid-email"){
             console.log("invalid email format");
             createSideAlert("Epostanızı doğru yazdığınızdan emin olun", "warning", 5);
-            highlightElement("login-email");
+            highlightElement("login-email", 5);
          } else if(errorCode === "auth/email-already-in-use"){
             console.log("auth/email-already-in-use");
             createSideAlert("Bu E-posta kullanımda", "warning", 5);
-            highlightElement("login-email");
+            highlightElement("login-email", 5);
          } else if(errorCode === "auth/user-not-found"){
             console.log("auth/user-not-found");
             createSideAlert("Böyle bir kullanıcı bulunamadı", "warning", 5);
-            highlightElement("login-email");
-            highlightElement("login-pass");
+            highlightElement("login-email", 5);
+            highlightElement("login-pass", 5);
          } else {
             console.log("error:",errorMessage);
             createSideAlert(errorMessage,"warning", 5);

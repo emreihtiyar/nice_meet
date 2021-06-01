@@ -289,7 +289,7 @@ function highlightElement(elementID, second) {
     document.getElementById(elementID).classList.add("border-red");
     setTimeout(() => { 
         document.getElementById(elementID).classList.remove("border-red");
-    }, (sec*1000));
+    }, (second*1000));
 }
 
 function chatBtnListener() {
