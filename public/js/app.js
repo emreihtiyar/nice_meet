@@ -219,7 +219,7 @@ async function getCurrentUserInfo() {
 
 
 async function createRoom() {
-    createChatRoom("Oda oluşturuluyor, Lütfen bekleyiniz...", "primary", 3);
+    createSideAlert("Oda oluşturuluyor, Lütfen bekleyiniz", "primary", 3);
 
     document.querySelector('#local-video').addEventListener('click', hideLocalVideo);
     document.querySelector('#hangup-btn').classList.remove("hidden");
