@@ -180,54 +180,6 @@ function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
 }
 
 /**
-    * Kamera ve mikrofonun açılmasını sağlar ve kamera görüntüsünü cameraStream'de tutar.
- */
-async function openUserMedia() {
-    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-
-    navigator.mediaDevices.enumerateDevices().then(devices => {
-        devices.forEach(device => {
-            const deviceNode = document.createElement("li");
-            deviceNode.innerText = device.label;
-            deviceNode.classList.add("mdc-list-item");
-            deviceNode.role = "menuitem";
-            deviceNode.tabIndex = 0;
-
-            //if (device.kind == "audioinput") {
-            //document.getElementById("microphones").appendChild(deviceNode);
-            if (device.kind == "videoinput") {
-                deviceNode.addEventListener('click', () => changeCamera(device.deviceId))
-                document.getElementById("cameras").appendChild(deviceNode);
-            }
-        });
-    });
-
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-        video: {
-            facingMode: "user"
-        },
-        audio: {
-            echoCancellation: true,    //TODO: fixme-düzelt -> true olmalı
-            noiseSuppression: true,    //TODO: fixme-düzelt -> true olmalı
-            autoGainControl: true,     //TODO: fixme-düzelt -> true olmalı
-        }
-    }).catch(error => {
-        console.log("kamera açma hatası: ", error);
-        createSideAlert("Kamera Açılamadı, Lütfen kamerayı kullanan diğer uygulamaları kapatınız ve sayfayı yenileyiniz.", "warning", 1000);
-        document.getElementById("buttons").style.display = "none";
-    });;
-
-    document.querySelector('#local-video').srcObject = cameraStream;
-    document.querySelector('#local-video').muted = true;
-
-    console.log('Stream:', document.querySelector('#local-video').srcObject);
-    document.querySelector('#join-btn').classList.remove("hidden");
-    document.querySelector('#create-btn').classList.remove("hidden");
-
-    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
-}
-
-/**
     *bağlantıdan çık ve sayfayı yenile bu sayede görüşmeden çıkmış olursun
  */
 function hangUp() {
@@ -253,8 +205,11 @@ async function getCurrentUserInfo() {
                 currentUserInfo = snap.data();
             });
         } else {
+            createSideAlert("Giriş Yapmanız gerekli. Yönlendiriliyorsunuz.", "warning");
             if (params.get('roomId')) {
                 window.location.href = "/" + "?roomId=" + params.get('roomId');
+            } else {
+                window.location.href = "/";
             }
         }
     });
@@ -264,6 +219,8 @@ async function getCurrentUserInfo() {
 
 
 async function createRoom() {
+    createChatRoom("Oda oluşturuluyor, Lütfen bekleyiniz...", "primary", 3);
+
     document.querySelector('#local-video').addEventListener('click', hideLocalVideo);
     document.querySelector('#hangup-btn').classList.remove("hidden");
     document.querySelector('#create-btn').classList.add("hidden");
@@ -279,10 +236,7 @@ async function createRoom() {
     const roomRef = await db.collection('rooms').doc();
     console.log("roomRef: ", roomRef);
 
-    document.querySelector('#share-btn').onclick = () => {
-        //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank");
-        window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`, "_blank");
-    };
+    setUIRoomInfo(roomRef.id, `${location.hostname}/?roomId=${roomRef.id}`)
 
     nameId = await addUserToRoom(roomRef);
     roomRef.set({ host: nameId });
@@ -302,6 +256,10 @@ async function createRoom() {
     signalHangup(roomRef);
     console.log(`Room ID: ${roomRef.id}`);
     document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton(roomRef));
+
+    createSideAlert("Oda oluşturuldu. oda numarası: " + roomRef.id, "succes", 5);
+    createSideAlert("Kullanıcıları davet etmek için paylaş butonunu kullanabilirsiniz.", "primary", 5);
+    highlightElement("share-btn", 5);
 }
 
 function joinRoom() {
@@ -321,11 +279,9 @@ async function joinRoomById(roomId) {
     if (roomSnapshot.exists) {
         document.querySelector('#hangup-btn').classList.remove("hidden");
         document.querySelector('#local-video').addEventListener('click', hideLocalVideo);
-        document.querySelector('#share-btn').onclick = () => {
-            //window.open(`https://api.whatsapp.com/send?text=${window.location.href.split('?')[0]}?roomId=${roomRef.id}`,"_blank")
-            window.open(`https://nicetomeet-33b4a.web.app/?roomId=${roomRef.id}`, "_blank");
-        };
-
+        
+        setUIRoomInfo(roomRef.id, `${location.hostname}/?roomId=${roomRef.id}`)
+        
         //document.querySelector('#share-btn').classList.remove("hidden"); //TODO: Host olmayanlar bu odayayı paylaşabilmeli mi?
         document.querySelector('#create-btn').classList.add("hidden");
         document.querySelector('#join-btn').classList.add("hidden");
@@ -362,9 +318,9 @@ async function joinRoomById(roomId) {
 }
 
 function init() {
-    firebase.initializeApp(firebaseConfig);
-    db = firebase.firestore();
-    auth = firebase.auth();
+    firebase.initializeApp(firebaseConfig); //firebase bağlantı bilgilerini girer
+    db = firebase.firestore(); //firestore'a bağlanır
+    auth = firebase.auth(); //auth'a bağlanır
     
     if (location.hostname === "localhost") {
         db.useEmulator("localhost", "8080");
@@ -374,7 +330,8 @@ function init() {
     params = new URLSearchParams(location.search);
     roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 
-    getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
+    //TODO: Burası Localde çalışamalar bittikten sonra açılacak 
+    //getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
     openUserMedia(); //kamera ve mikrofon'dan stream'i alıyoruz
 
     if (params.get('roomId')) {
@@ -387,15 +344,11 @@ function init() {
 
     hideNavBarOnTap(); //ekranda biryere tıklandığında butonları kapatıyor, fonksiyon kendi içinde dinliyor.
 
-    //muteToggleEnable(); //Mute butonunu dinliyor
-    //videoToggleEnable(); //Video butonunu dinliyor
-
     var eventName = isiOS ? 'pagehide' : 'beforeunload';
 
     window.addEventListener(eventName, function () {
         document.getElementById('hangup-btn').click();
     });
-
 }
 
 init();

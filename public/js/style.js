@@ -284,11 +284,12 @@ function createSideAlert(message, type, sec=5, link) {
     }, (sec*1000));
 }
 
-function markTag(elementID) {
+
+function highlightElement(elementID, second) {
     document.getElementById(elementID).classList.add("border-red");
     setTimeout(() => { 
         document.getElementById(elementID).classList.remove("border-red");
-    }, 3000);
+    }, (sec*1000));
 }
 
 function chatBtnListener() {
@@ -323,6 +324,54 @@ function usersBtnListener() {
     }
 }
 
+function setUIRoomInfo(roomID, URL){
+    document.getElementById("current-room-id").innerText = roomID
+    document.getElementById("current-room-URL").innerText = URL;
+}
+
+function copyRoomInfo(param) {
+    if (param.path[0].id == "current-room-id" || param.path[1].id == "copy-room-id-btn") {
+        //Ekranda id'nin üstüne yada id'nin yanındaki kopyala butonuna nasıldıysa
+        let roomId = document.getElementById("current-room-id").innerText;
+        navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+            if (result.state == "granted" || result.state == "prompt") {
+                /* write to the clipboard now -- Eğer kopyalamaya izin veriliyorsa*/
+                navigator.clipboard.writeText(roomId).then(() => {
+                    /* clipboard successfully set */
+                    createSideAlert("Kopyalandı.","success", 3);
+                    document.querySelector("#copy-room-id-btn span").innerHTML = "done_all";
+                }, ()=> {
+                    /* clipboard write failed - Kopyalama başarılı değilse */
+                    createSideAlert("Otomatik kopyalama başarısız. Tarayıcı bunu desteklemiyor.","warning", 3);
+                    document.querySelector("#copy-room-id-btn span").innerHTML = "priority_high";
+                });
+            }
+        });
+    } else if (param.path[0].id == "current-room-URL" || param.path[1].id == "copy-room-URL-btn") {
+        //Ekranda URL'in üstüne yada URL'nin yanındaki kopyala butonuna nasıldıysa
+        let roomURL = document.getElementById("current-room-URL").innerText;
+        navigator.permissions.query({ name: "clipboard-write" }).then(result => {
+            if (result.state == "granted" || result.state == "prompt") {
+                /* write to the clipboard now -- Eğer kopyalamaya izin veriliyorsa*/
+                navigator.clipboard.writeText(roomURL).then(() => {
+                    /* clipboard successfully set */
+                    createSideAlert("Kopyalandı.","success", 3);
+                    document.querySelector("#copy-room-URL-btn span").innerHTML = "done_all";
+                }, ()=> {
+                    /* clipboard write failed - Kopyalama başarılı değilse */
+                    createSideAlert("Otomatik kopyalama başarısız. Tarayıcı bunu desteklemiyor.","warning", 3);
+                    document.querySelector("#copy-room-URL-btn span").innerHTML = "priority_high";
+                });
+            }
+        });
+    }
+    setTimeout(()=>{
+        document.querySelector("#copy-room-id-btn span").innerHTML = "content_copy";
+        document.querySelector("#copy-room-URL-btn span").innerHTML = "content_copy";
+    },2000)
+
+}
+
 function addAllListener() {
     document.querySelector('#hangup-btn').addEventListener('click', hangUp);
     document.querySelector('#create-btn').addEventListener('click', createRoom);
@@ -332,9 +381,16 @@ function addAllListener() {
     document.getElementById("chat-btn").onclick = chatBtnListener;
     document.getElementById("users-btn").onclick = usersBtnListener;
     document.getElementById("record-btn").onclick = recordStartOrStop;
-
     document.getElementById("video-btn").onclick = videoToggleEnable;
     document.getElementById("mute-btn").onclick = muteToggleEnable;
+
+    document.getElementById("close-front-alert-btn").onclick = () => {     document.getElementById("front-alert-container").classList.add("hidden"); }
+    document.getElementById("share-btn").onclick = () => {     document.getElementById("front-alert-container").classList.remove("hidden"); };
+    
+    document.getElementById("current-room-id").onclick = copyRoomInfo;
+    document.getElementById("copy-room-id-btn").onclick = copyRoomInfo;
+    document.getElementById("current-room-URL").onclick = copyRoomInfo;
+    document.getElementById("copy-room-URL-btn").onclick = copyRoomInfo;
 
     // Tam ekrana geçmek için 
     //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.

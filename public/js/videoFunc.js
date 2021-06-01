@@ -226,3 +226,55 @@ function sendStream(peerConnection, stream) {
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
+
+//!------------------------------------------------ User Media -------------------------------------------------
+
+/**
+    * Kamera ve mikrofonun açılmasını sağlar ve kamera görüntüsünü cameraStream'de tutar.
+ */
+async function openUserMedia() {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+    
+    
+    navigator.mediaDevices.enumerateDevices().then(devices => {
+        devices.forEach(device => {
+            const deviceNode = document.createElement("li");
+            deviceNode.innerText = device.label;
+            deviceNode.classList.add("mdc-list-item");
+            deviceNode.role = "menuitem";
+            deviceNode.tabIndex = 0;
+            
+            //if (device.kind == "audioinput") {
+                //document.getElementById("microphones").appendChild(deviceNode);
+                if (device.kind == "videoinput") {
+                    deviceNode.addEventListener('click', () => changeCamera(device.deviceId))
+                    document.getElementById("cameras").appendChild(deviceNode);
+                }
+            });
+        });
+        
+        cameraStream = await navigator.mediaDevices.getUserMedia({
+            video: {
+                facingMode: "user"
+            },
+            audio: {
+                echoCancellation: true,    //TODO: fixme-düzelt -> true olmalı
+                noiseSuppression: true,    //TODO: fixme-düzelt -> true olmalı
+                autoGainControl: true,     //TODO: fixme-düzelt -> true olmalı
+            }
+        }).catch(error => {
+        console.log("kamera açma hatası: ", error);
+        createSideAlert("Kamera Açılamadı, Lütfen kamera ve mikrofon kullanım iznini verniniz, eğer verdiyseniz kamerayı kullanan diğer uygulamaları kapatınız ve sayfayı yenileyiniz.", "warning", 1000);
+        createSideAlert("Kamera ve Mikrofon izni olmadan bu uygulama kullanılamaz.", "warning", 1000);
+        document.getElementById("buttons").style.display = "none";
+    });;
+
+    document.querySelector('#local-video').srcObject = cameraStream;
+    document.querySelector('#local-video').muted = true;
+
+    console.log('Stream:', document.querySelector('#local-video').srcObject);
+    document.querySelector('#join-btn').classList.remove("hidden");
+    document.querySelector('#create-btn').classList.remove("hidden");
+
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+}
