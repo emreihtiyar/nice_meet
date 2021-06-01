@@ -33,7 +33,7 @@ let nameId = null;  //nameId -> şuandaki kullanıcının id'si (currentUser.uid
 let contentId = null; //TODO: Bundan kurtulmaya çalışıyorum ama kesin olacak mı belli değil
 
 let muteState = false;      //Benim mikrofonumun kapalı olup olmadığını tutar (kapalı -> true)
-let videoState = true;      //Benim Videomunaçık olup olmadığını tutar (kapalı -> false)
+let videoState = true;      //Benim Videomun açık olup olmadığını tutar (kapalı -> false)
 let contentState = false;   //Benim sunup sunmadığımı tutar (kapalı -> false)
 
 let cameraStream = null; //TODO: cameraStream'in global kalmasına gereksiz olabilir, bunu denemelisin
@@ -212,9 +212,9 @@ async function openUserMedia() {
             autoGainControl: true,     //TODO: fixme-düzelt -> true olmalı
         }
     }).catch(error => {
-        console.log("kamera açma hatası");
-        console.error("kamera açma hatası: ", error);
-        videoToggleEnable();
+        console.log("kamera açma hatası: ", error);
+        createSideAlert("Kamera Açılamadı, Lütfen kamerayı kullanan diğer uygulamaları kapatınız ve sayfayı yenileyiniz.", "warning", 1000);
+        document.getElementById("buttons").style.display = "none";
     });;
 
     document.querySelector('#local-video').srcObject = cameraStream;
@@ -387,8 +387,8 @@ function init() {
 
     hideNavBarOnTap(); //ekranda biryere tıklandığında butonları kapatıyor, fonksiyon kendi içinde dinliyor.
 
-    muteToggleEnable(); //Mute butonunu dinliyor
-    videoToggleEnable(); //Video butonunu dinliyor
+    //muteToggleEnable(); //Mute butonunu dinliyor
+    //videoToggleEnable(); //Video butonunu dinliyor
 
     var eventName = isiOS ? 'pagehide' : 'beforeunload';
 

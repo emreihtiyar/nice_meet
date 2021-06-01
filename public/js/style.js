@@ -333,6 +333,8 @@ function addAllListener() {
     document.getElementById("users-btn").onclick = usersBtnListener;
     document.getElementById("record-btn").onclick = recordStartOrStop;
 
+    document.getElementById("video-btn").onclick = videoToggleEnable;
+    document.getElementById("mute-btn").onclick = muteToggleEnable;
 
     // Tam ekrana geçmek için 
     //TODO: Tam ekrana geçiş style.js içinde olması daha mantıklı olabilir.

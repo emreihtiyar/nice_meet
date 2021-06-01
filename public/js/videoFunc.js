@@ -51,22 +51,20 @@ function changeCamera(deviceId) {
     TODO: ekran değişikliklerini style.js ve yeni bir js dosyasında yap buradan ulaşım olmasın
 */
 function videoToggleEnable() {
-    console.log(arguments.callee.name, " Fonksiyonun başındayız.", " Bu fonksiyon tetikleyici içerir.");
-    
-    document.getElementById('video-btn').addEventListener('click', () => {
-        if (videoState) {
-            videoState = false;
-            cameraStream.getVideoTracks()[0].enabled = false;
-            document.querySelector('#video-btn').innerText = "videocam_off";
-            document.getElementById('video-btn').classList.add('toggle');
-        } else {
-            videoState = true;
-            cameraStream.getVideoTracks()[0].enabled = true;
-            document.querySelector('#video-btn').innerText = "videocam";
-            document.querySelector('#video-btn').classList.remove('toggle');
-        }
-    });
-    
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+
+    if (videoState) {
+        videoState = false;
+        cameraStream.getVideoTracks()[0].enabled = false;
+        document.querySelector('#video-btn').innerText = "videocam_off";
+        document.getElementById('video-btn').classList.add('toggle');
+    } else {
+        videoState = true;
+        cameraStream.getVideoTracks()[0].enabled = true;
+        document.querySelector('#video-btn').innerText = "videocam";
+        document.querySelector('#video-btn').classList.remove('toggle');
+    }
+
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
@@ -77,23 +75,21 @@ function videoToggleEnable() {
 */
 function muteToggleEnable() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-    
-    document.querySelector('#mute-btn').addEventListener('click', () => {
-        if (!muteState) {
-            console.log("Muting");
-            muteState = true;
-            cameraStream.getAudioTracks()[0].enabled = false;
-            document.querySelector('#mute-btn').innerText = "mic_off";
-            document.getElementById('mute-btn').classList.add('toggle');
-        } else {
-            console.log("Unmuting");
-            muteState = false;
-            cameraStream.getAudioTracks()[0].enabled = true;
-            document.querySelector('#mute-btn').innerText = "mic";
-            document.getElementById('mute-btn').classList.remove('toggle');
-        }
-    });
-    
+
+    if (!muteState) {
+        console.log("Muting");
+        muteState = true;
+        cameraStream.getAudioTracks()[0].enabled = false;
+        document.querySelector('#mute-btn').innerText = "mic_off";
+        document.getElementById('mute-btn').classList.add('toggle');
+    } else {
+        console.log("Unmuting");
+        muteState = false;
+        cameraStream.getAudioTracks()[0].enabled = true;
+        document.querySelector('#mute-btn').innerText = "mic";
+        document.getElementById('mute-btn').classList.remove('toggle');
+    }
+
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
