@@ -49,6 +49,8 @@ let roomID = null;
 let currentUser = null;
 let currentUserInfo = null;
 
+let 
+
 /**
     ** Ekran paylaşımı başladığında, paylaşım olduğunu ve paylaşımın özelliklerini kaydeder firebase'e kaydeder
  */
