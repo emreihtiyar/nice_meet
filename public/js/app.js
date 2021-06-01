@@ -1,6 +1,5 @@
 const menu = new mdc.menu.MDCMenu(document.querySelector('.mdc-menu'));
-let db = null;
-let auth = null;
+let roomDialog = null;
 
 const firebaseConfig = {
     apiKey: "AIzaSyCeuHu2KoX_rSVNAeKATRSDQEmMps1bHvs",
@@ -24,13 +23,13 @@ const configuration = {
     ],
     iceCandidatePoolSize: 10,
 };
-//! roomRef -> rooms/FAh3XJDyZxVxGhA8k23i rooms/oda_id'sini tutuyor ve bunu bir documannReference olarak tutar.
-//! ICE Candidate -> (ICE isteği) -> ARAŞTIR.
 
-let roomDialog = null;
+let db = null;
+let auth = null;
 
 let nameId = null;  //nameId -> şuandaki kullanıcının id'si (currentUser.uid) //TODO: Bundan kurtulmaya çalışıyorum ama kesin olacak mı belli değil 
 let contentId = null; //TODO: Bundan kurtulmaya çalışıyorum ama kesin olacak mı belli değil
+let roomRef = null;
 
 let muteState = false;      //Benim mikrofonumun kapalı olup olmadığını tutar (kapalı -> true)
 let videoState = true;      //Benim Videomun açık olup olmadığını tutar (kapalı -> false)
@@ -43,18 +42,15 @@ let isContentExists = false;
 let isContentShown = false;
 
 let swipeEventFunction;
-var isiOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
 
 let roomID = null;
 let currentUser = null;
 let currentUserInfo = null;
 
-let 
-
 /**
     ** Ekran paylaşımı başladığında, paylaşım olduğunu ve paylaşımın özelliklerini kaydeder firebase'e kaydeder
  */
-function signalContentShare(roomRef) {
+function signalContentShare() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
     //TODO: rasgeleID ve  display:'content' burada atanıyor ancak bu rasgeleyi userid yaparsam bu sefer aynı adda olan ve display:'user' olan silinecek buda kamera content bilgisini siler
@@ -67,8 +63,8 @@ function signalContentShare(roomRef) {
         "muteState":muteState,
         "videoState":videoState
     });
-    requestConnectionToCurrentPeers(roomRef, contentId, true);
-    acceptConnectionsFromJoiningPeers(roomRef, contentId, true);
+    requestConnectionToCurrentPeers(contentId, true);
+    acceptConnectionsFromJoiningPeers(contentId, true);
 
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
@@ -78,7 +74,7 @@ function signalContentShare(roomRef) {
     **ardından eğer sunumu biz yapıyorsak onuda siliyor.
  * @param {*} roomRef 
  */
-    function signalHangup(roomRef) {
+    function signalHangup() {
         console.log(arguments.callee.name, " Fonksiyonun başındayız.");
         
         document.querySelector('#hangup-btn').addEventListener('click', async () => {
@@ -105,7 +101,7 @@ function switchStream(peerConnection, stream) {
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
-async function addUserToRoom(roomRef) {
+async function addUserToRoom() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
     //let Id = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
@@ -127,7 +123,7 @@ async function addUserToRoom(roomRef) {
     ** önce sunan kişi mi? kontrol et, eğer öyleyse ekrandaki ekran paylaş butonunu gizle
     ** bu peer'lara bağlantı isteği gönder.
  */
-function requestConnectionToCurrentPeers(roomRef, Id, isContent) {
+function requestConnectionToCurrentPeers(Id, isContent) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
     roomRef.collection('partyList').get().then(snapshot => {
@@ -140,7 +136,7 @@ function requestConnectionToCurrentPeers(roomRef, Id, isContent) {
                     document.getElementById('screen-share-btn').classList.add('hidden');
                 }
                 console.log('Sending request to: ' + peerId);
-                await peerRequestConnection(peerId, roomRef, Id, isContent, isPeerContent);
+                await peerRequestConnection(peerId, Id, isContent, isPeerContent);
             }
         })
     });
@@ -155,7 +151,7 @@ function requestConnectionToCurrentPeers(roomRef, Id, isContent) {
     ** *peerAcceptConnection* fonksiyonunu çağırıyor
     * eğer content'se fonksiyonu çağırırken buna göre değişiyor ve ekrandaki ekranı paylaş butonunu gizliyor
  */
-function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
+function acceptConnectionsFromJoiningPeers(nameId, isReceiverContent) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
     roomRef.collection(nameId).doc('SDP').collection('offer').onSnapshot(async snapshot => {
@@ -171,7 +167,7 @@ function acceptConnectionsFromJoiningPeers(roomRef, nameId, isReceiverContent) {
                     document.getElementById('screen-share-btn').classList.add('hidden');
                 }
                 console.log('Is sender content ' + isSenderContent);
-                await peerAcceptConnection(change.doc.id, roomRef, nameId, isSenderContent, isReceiverContent);
+                await peerAcceptConnection(change.doc.id, nameId, isSenderContent, isReceiverContent);
             } else {
                 console.log("Mesh has been setup.");
             }
@@ -235,7 +231,7 @@ async function createRoom() {
     document.querySelector('#record-btn').classList.remove("hidden");
 
     
-    const roomRef = await db.collection('rooms').doc();
+    roomRef = await db.collection('rooms').doc();
     console.log("roomRef: ", roomRef);
 
     setUIRoomInfo(roomRef.id, `${location.hostname}/?roomId=${roomRef.id}`)
@@ -243,7 +239,7 @@ async function createRoom() {
     nameId = await addUserToRoom(roomRef);
     roomRef.set({ host: nameId });
 
-    acceptConnectionsFromJoiningPeers(roomRef, nameId, false);
+    acceptConnectionsFromJoiningPeers(nameId, false);
 
     /*Create Chat Room and Listen chat rooms changes */
     roomID = roomRef.id;
@@ -251,13 +247,13 @@ async function createRoom() {
     incomingMessageListener();
 
     /*Odaya girenleri kontrol etmek için veya kamera, mikrofon ve içerik bilgilerini firebase'de değiştirmek için  */
-    partyListListener(roomRef);
-    mutingStateChangeInFirebase(roomRef);
-    videoStateChangeInFirebase(roomRef);
+    partyListListener();
+    mutingStateChangeInFirebase();
+    videoStateChangeInFirebase();
 
-    signalHangup(roomRef);
+    signalHangup();
     console.log(`Room ID: ${roomRef.id}`);
-    document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton(roomRef));
+    document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton());
 
     createSideAlert("Oda oluşturuldu. oda numarası: " + roomRef.id, "succes", 5);
     createSideAlert("Kullanıcıları davet etmek için paylaş butonunu kullanabilirsiniz.", "primary", 5);
@@ -265,16 +261,22 @@ async function createRoom() {
 }
 
 function joinRoom() {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+
     document.querySelector('#confirmJoinBtn').
         addEventListener('click', async () => {
             const roomId = document.querySelector('#room-id').value;
             await joinRoomById(roomId);
         }, { once: true });
     roomDialog.open();
+
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
 async function joinRoomById(roomId) {
-    const roomRef = db.collection('rooms').doc(`${roomId}`);
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+
+    roomRef = db.collection('rooms').doc(`${roomId}`);
     const roomSnapshot = await roomRef.get();
     console.log('Got room:', roomSnapshot.exists);
 
@@ -293,30 +295,32 @@ async function joinRoomById(roomId) {
         document.querySelector('#users-btn').classList.remove("hidden");
         //document.querySelector('#record-btn').classList.remove("hidden"); //TODO: Katılanlar kaydetmese daha iyi olabilir.
 
-        nameId = await addUserToRoom(roomRef);
+        nameId = await addUserToRoom();
 
         console.log('Join room: ', roomId);
 
-        requestConnectionToCurrentPeers(roomRef, nameId, false);
+        requestConnectionToCurrentPeers( nameId, false);
 
-        acceptConnectionsFromJoiningPeers(roomRef, nameId, false);
+        acceptConnectionsFromJoiningPeers( nameId, false);
 
         /*Create Chat Room and Listen chat rooms changes */
         roomID = roomRef.id;
         incomingMessageListener(roomID);
 
         /*Odaya girenleri kontrol etmek için veya kamera, mikrofon ve içerik bilgilerini firebase'de değiştirmek için  */
-        partyListListener(roomRef);
-        mutingStateChangeInFirebase(roomRef);
-        videoStateChangeInFirebase(roomRef);
+        partyListListener();
+        mutingStateChangeInFirebase();
+        videoStateChangeInFirebase();
 
-        signalHangup(roomRef);
+        signalHangup();
 
-        document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton(roomRef));
+        document.querySelector('#screen-share-btn').addEventListener('click', () => contentToggleButton());
 
     } else {
         document.querySelector('#current-room').innerText = `Room: ${roomId} - Doesn't exist!`;
     }
+
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }
 
 function init() {
@@ -333,7 +337,7 @@ function init() {
     roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
 
     //TODO: Burası Localde çalışamalar bittikten sonra açılacak 
-    //getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
+    getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
     openUserMedia(); //kamera ve mikrofon'dan stream'i alıyoruz
 
     if (params.get('roomId')) {
@@ -346,11 +350,13 @@ function init() {
 
     hideNavBarOnTap(); //ekranda biryere tıklandığında butonları kapatıyor, fonksiyon kendi içinde dinliyor.
 
-    var eventName = isiOS ? 'pagehide' : 'beforeunload';
-
-    window.addEventListener(eventName, function () {
-        document.getElementById('hangup-btn').click();
+    window.addEventListener(
+        (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) ? 'pagehide' : 'beforeunload',
+        function () {
+            document.getElementById('hangup-btn').click();
     });
 }
 
-init();
+$(document).ready(function () {
+    init();
+});

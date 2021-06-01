@@ -99,7 +99,7 @@ function muteToggleEnable() {
     * Bu sayede diğer kullanıcılar bu kullanıcının mikrofonunu kapattığını bilebilecekler
     *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (muteToggleEnable) yap veya bu fonksiyonu çağır
 */
-function mutingStateChangeInFirebase(roomRef) {
+function mutingStateChangeInFirebase() {
     document.querySelector('#mute-btn').addEventListener('click', () => {
         roomRef.collection('partyList').doc(currentUser.uid).update({
             'muteState': muteState
@@ -112,7 +112,7 @@ function mutingStateChangeInFirebase(roomRef) {
     * Bu sayede diğer kullanıcılar bu kullanıcının kamerasını kapattığını bilebilecekler
     *TODO: Burada tıklanıldımı diye kontrol etmek yerine zaten kontrol edilen yerde (videoToggleEnable) yap veya bu fonksiyonu çağır
 */
-function videoStateChangeInFirebase(roomRef) {
+function videoStateChangeInFirebase() {
     document.querySelector('#video-btn').addEventListener('click', () => {
         roomRef.collection('partyList').doc(currentUser.uid).update({
             'videoState': videoState
@@ -128,7 +128,7 @@ function videoStateChangeInFirebase(roomRef) {
     TODO: Gerekli görülmesi Halinde roomRef'i global bir değişken yap ki buraya onun alınmasına gerek kalınmasın
     TODO: localVideo yerine başka şekilde göster. ->Bunu yeni arayüz ilede yapabilirsin
 */
-function toggleOnContent(roomRef) {
+function toggleOnContent() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
     screenVideo = document.getElementById('local-video').cloneNode();
@@ -139,7 +139,7 @@ function toggleOnContent(roomRef) {
 
     document.getElementById('screen-share-btn').innerText = "stop_screen_share";
     document.getElementById('screen-share-btn').classList.add('toggle');
-    signalContentShare(roomRef);
+    signalContentShare();
     contentState = true;
     captureStream.getVideoTracks()[0].onended = () => {
         contentToggleOff(roomRef);
@@ -153,7 +153,7 @@ function toggleOnContent(roomRef) {
     TODO: ekran değişikliklerini style.js ve yeni bir js dosyasında yap buradan ulaşım olmasın
     TODO: firebase'deki content değerini silmesi için başka bir fonksiyon kullanabilirsin (roomRef global olması gerekebilir)
 */
-function contentToggleOff(roomRef) {
+function contentToggleOff() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
     roomRef.collection('partyList').doc(contentId).delete();
@@ -171,7 +171,7 @@ function contentToggleOff(roomRef) {
     ** Ekrandaki ekran paylaşımı butonunu dinliyor, butona basıldığında ekran paylaşımı açıksa kapatır, 
     ** değilse önce ekran kaydını başlatır ardından bunu firebase'e bildirir.
  */
-async function contentToggleButton(roomRef) {
+async function contentToggleButton() {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
     if (!contentState) {
@@ -184,12 +184,12 @@ async function contentToggleButton(roomRef) {
         try {
             console.log('Toggling screen share');
             captureStream = await startCapture(displayMediaOptions);
-            toggleOnContent(roomRef);
+            toggleOnContent();
         } catch (error) {
             console.log(error.message);
         }
     } else {
-        contentToggleOff(roomRef);
+        contentToggleOff();
     }
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
 }

@@ -22,7 +22,7 @@ function addStream(peerConnection, stream) {
  ** parametre olarak aldığı peerConnection'daki ICE candidate değişikliklerini topluyor ve,
  ** bu ICE candidate'leri firebase'de kendi koleksiyonunun altındaki Connection->ICECandidates içine yazıyor.
  */
-function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
+function signalICECandidates(peerConnection, peerId, nameId) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
     const callerCandidatesCollection = roomRef.collection(nameId).doc("Connections").collection("ICECandidates");
@@ -48,7 +48,7 @@ function signalICECandidates(peerConnection, roomRef, peerId, nameId) {
  ** Aldığı remoteEndpointID (uzaktaki peerın id'si) ile firebase'de o kullanıcının kaydettiği ICE candidate'lerini topluyor.
  *TODO:DETAYLI BAK.
  */
-async function receiveICECandidates(peerConnection, roomRef, remoteEndpointID, nameId) {
+async function receiveICECandidates(peerConnection, remoteEndpointID, nameId) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
     roomRef.collection(remoteEndpointID).doc("Connections").collection("ICECandidates").where("name", "==", nameId).onSnapshot(snapshot => {
@@ -105,7 +105,7 @@ async function createAnswer(peerConnection) {
     ** İçerik sunan (content) kişi ise bunuda ekliyor ancak bunun offer altına ama en içteki offerın yanına ekliyor
     * TODO: nameId'değişkeni neye göre geliyor bu olmasa nasıl yapılır, bağlantıda rasgele oluşmak dısışda işi varmı?
 */
-async function sendOffer(offer, roomRef, peerId, nameId, isUserContent) {
+async function sendOffer(offer, peerId, nameId, isUserContent) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
     const peerOffer = {
@@ -129,7 +129,7 @@ async function sendOffer(offer, roomRef, peerId, nameId, isUserContent) {
     ** İçerik sunan (content) kişi ise bunuda ekliyor ancak bunun answer altına ama en içteki answerın yanına ekliyor
     * TODO: nameId'değişkeni neye göre geliyor bu olmasa nasıl yapılır, bağlantıda rasgele oluşmak dısışda işi varmı?
 */
-async function sendAnswer(answer, roomRef, peerId, nameId, isUserContent) {
+async function sendAnswer(answer, peerId, nameId, isUserContent) {
     const peerAnswer = {
         'answer': {
             type: answer.type,
@@ -149,7 +149,7 @@ async function sendAnswer(answer, roomRef, peerId, nameId, isUserContent) {
     ** uzak açıklamasını ekliyoruz.
     * (bu sayede bu peerConnection nesnesinden asnwer oluşturulduğunda remoteDescription'a bakarak uygun answer'ı(cevabı) oluşturuyor)
 */
-async function receiveOffer(peerConnection, roomRef, peerId, nameId) {
+async function receiveOffer(peerConnection, peerId, nameId) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
 
     await roomRef.collection(nameId).doc('SDP').collection('offer').doc(peerId).get().then(async snapshot => {
@@ -170,7 +170,7 @@ async function receiveOffer(peerConnection, roomRef, peerId, nameId) {
     ** uzak açıklamasını ekliyoruz.
     * (bu sayede bu peerConnection bağlantı için bilgilerimiz oluyor.)
 */
-async function receiveAnswer(peerConnection, roomRef, peerId, nameId) {
+async function receiveAnswer(peerConnection, peerId, nameId) {
     console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     
     roomRef.collection(nameId).doc('SDP').collection('answer').doc(peerId).onSnapshot(async snapshot => {
@@ -191,7 +191,7 @@ async function receiveAnswer(peerConnection, roomRef, peerId, nameId) {
     ** bu peer'dan gelecek stream ve answer(cevap)'ları ve ICE isteklerini toplar
     ** önce ekrandaki hangup butonuna dinyelici yerleştirir ve bağlantının kapanmasını ve yeniden başlatılmasını dinlemeye başlar
  */
-async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isPeerContent) {
+async function peerRequestConnection(peerId, nameId, isUserContent, isPeerContent) {
     console.log('Create PeerConnection with configuration: ', configuration);
 
     const peerConnection = new RTCPeerConnection(configuration);
@@ -209,27 +209,27 @@ async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isP
         });
     }
 
-    signalICECandidates(peerConnection, roomRef, peerId, nameId);
+    signalICECandidates(peerConnection, peerId, nameId);
     const offer = await createOffer(peerConnection);
 
-    await sendOffer(offer, roomRef, peerId, nameId, isUserContent);
+    await sendOffer(offer, peerId, nameId, isUserContent);
 
     if (!isUserContent) {
         receiveStream(peerConnection, peerId, isPeerContent);
     }
 
-    await receiveAnswer(peerConnection, roomRef, peerId, nameId);
+    await receiveAnswer(peerConnection, peerId, nameId);
 
-    await receiveICECandidates(peerConnection, roomRef, peerId, nameId);
+    await receiveICECandidates(peerConnection, peerId, nameId);
 
     document.querySelector('#hangup-btn').addEventListener('click', () => peerConnection.close());
 
     if (!isUserContent) {
-        closeConnection(peerConnection, roomRef, peerId);
+        closeConnection(peerConnection, peerId);
     }
 
     if (!isUserContent) {
-        restartConnection(peerConnection, roomRef, peerId);
+        restartConnection(peerConnection, peerId);
     }
 }
 
@@ -239,7 +239,7 @@ async function peerRequestConnection(peerId, roomRef, nameId, isUserContent, isP
     ** offer(istek)'leri toplar ve her bir isteğe answer(cevap) oluşturur. Oluşturduğu cevabı gönderir ve ICE isteklerini toplar
     ** önce ekrandaki hangup butonuna dinyelici yerleştirir ve bağlantının kapanmasını ve yeniden başlatılmasını dinlemeye başlar
 */
-async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUserContent) {
+async function peerAcceptConnection(peerId, nameId, isPeerContent, isUserContent) {
     console.log('Create PeerConnection with configuration: ', configuration)
     
     const peerConnection = new RTCPeerConnection(configuration);
@@ -258,35 +258,35 @@ async function peerAcceptConnection(peerId, roomRef, nameId, isPeerContent, isUs
         }
     }
 
-    signalICECandidates(peerConnection, roomRef, peerId, nameId);
+    signalICECandidates(peerConnection, peerId, nameId);
 
     if (!isUserContent) {
         receiveStream(peerConnection, peerId, isPeerContent);
     }
 
-    await receiveOffer(peerConnection, roomRef, peerId, nameId);
+    await receiveOffer(peerConnection, peerId, nameId);
 
     const answer = await createAnswer(peerConnection);
 
-    await sendAnswer(answer, roomRef, peerId, nameId, isUserContent);
+    await sendAnswer(answer, peerId, nameId, isUserContent);
 
-    await receiveICECandidates(peerConnection, roomRef, peerId, nameId);
+    await receiveICECandidates(peerConnection, peerId, nameId);
 
     document.querySelector('#hangup-btn').addEventListener('click', () => peerConnection.close());
 
     if (!isUserContent) {
-        closeConnection(peerConnection, roomRef, peerId);
+        closeConnection(peerConnection, peerId);
     }
 
     if (!isUserContent) {
-        restartConnection(peerConnection, roomRef, peerId);
+        restartConnection(peerConnection, peerId);
     }
 }
 
 /**
     ** Aldığı peer'ın bağlantısının kesilmesi durmunda  yeniden bağlanmaya çalışır
  */
-function restartConnection(peerConnection, roomRef, peerId) {
+function restartConnection(peerConnection, peerId) {
     peerConnection.oniceconnectionstatechange = async function () {
         
         if (peerConnection.iceConnectionState === "failed") {
@@ -297,7 +297,7 @@ function restartConnection(peerConnection, roomRef, peerId) {
                 peerConnection.createOffer({ iceRestart: true })
                     .then(peerConnection.setLocalDescription)
                     .then(async offer => {
-                        await sendOffer(offer, roomRef, peerId, false);
+                        await sendOffer(offer, peerId, false);
                     });
             }
         }
@@ -310,39 +310,39 @@ function restartConnection(peerConnection, roomRef, peerId) {
     ** bu durumda arayüzden bu kişinin videosu kaldırılmalı, 
     ** eğer bu kişi sunan kişi ise o zaman arayüzden bu sunumda kaldırılmalı ve bu durumu tutan değişkenler yenilenmeli.
  */
-    function closeConnection(peerConnection, roomRef, peerId) {
-        console.log(arguments.callee.name, " Fonksiyonun başındayız.");
-    
-        roomRef.collection('partyList').where('name', '==', peerId).onSnapshot(snapshot => {
-            snapshot.docChanges().forEach(change => {
-                if (change.type == 'removed') {
-                    if (change.doc.data().display == 'content') {
-                        isContentExists = false;
-                        isContentShown = false;
-                        document.removeEventListener('touchmove', swipeEventFunction);
-                        document.getElementById("screen-share-btn").classList.remove("hidden");
-                    }
-                    peerConnection.close();
-                    if (document.getElementById("video" + peerId + "Container") != null) {
-                        document.getElementById("video" + peerId + "Container").remove();
-                    }
-                    enforceLayout(--numberOfDisplayedPeers);
+function closeConnection(peerConnection, peerId) {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
+
+    roomRef.collection('partyList').where('name', '==', peerId).onSnapshot(snapshot => {
+        snapshot.docChanges().forEach(change => {
+            if (change.type == 'removed') {
+                if (change.doc.data().display == 'content') {
+                    isContentExists = false;
+                    isContentShown = false;
+                    document.removeEventListener('touchmove', swipeEventFunction);
+                    document.getElementById("screen-share-btn").classList.remove("hidden");
                 }
-            });
-        });
-    
-        peerConnection.onconnectionstatechange = function () {
-            if (peerConnection.connectionState == 'disconnected' || peerConnection.connectionState == "failed") {
-                //roomRef.collection('partyList').doc(peerId).delete();
                 peerConnection.close();
                 if (document.getElementById("video" + peerId + "Container") != null) {
                     document.getElementById("video" + peerId + "Container").remove();
                 }
+                enforceLayout(--numberOfDisplayedPeers);
+            }
+        });
+    });
+
+    peerConnection.onconnectionstatechange = function () {
+        if (peerConnection.connectionState == 'disconnected' || peerConnection.connectionState == "failed") {
+            //roomRef.collection('partyList').doc(peerId).delete();
+            peerConnection.close();
+            if (document.getElementById("video" + peerId + "Container") != null) {
+                document.getElementById("video" + peerId + "Container").remove();
             }
         }
-    
-        console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
     }
+
+    console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
+}
 
 /**
     ** Aldığı peer'ın bazı durumlarını dinler ve durum değişikliklerinde ekrana yazdırır, dinlediği durumlar

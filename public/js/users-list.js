@@ -20,7 +20,7 @@ function userJoined(user) {
     }
 }
 
-async function partyListListener(roomRef) {
+async function partyListListener() {
     roomRef.collection("partyList").onSnapshot(async snapshot => {
         snapshot.docChanges().forEach(change => {//doküman değişikliğinde her br değişiklik için çağırılır.
             let user = change.doc.data();
