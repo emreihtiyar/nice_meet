@@ -76,7 +76,7 @@ async function createOffer(peerConnection) {
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
     console.log('Created offer:', offer);
-    offer.sdp = preferCodec(offer.sdp, "h264");
+    offer.sdp = preferCodec(offer.sdp, "vp9");
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
     
@@ -94,7 +94,7 @@ async function createAnswer(peerConnection) {
     const answer = await peerConnection.createAnswer();
     console.log('Created answer:', answer);
     await peerConnection.setLocalDescription(answer);
-    answer.sdp = preferCodec(answer.sdp, "h264");
+    answer.sdp = preferCodec(answer.sdp, "vp9");
     
     console.log(arguments.callee.name, " Fonksiyonun sonundayız.");
     
@@ -198,6 +198,14 @@ async function peerRequestConnection(peerId, nameId, isUserContent, isPeerConten
 
     peerConnectionStateLintener(peerConnection);
 
+    if (!isUserContent) {
+        closeConnection(peerConnection, peerId);
+    }
+
+    if (!isUserContent) {
+        restartConnection(peerConnection, peerId);
+    }
+
     if (isUserContent) {
         sendStream(peerConnection, captureStream)
     } else {
@@ -224,13 +232,6 @@ async function peerRequestConnection(peerId, nameId, isUserContent, isPeerConten
 
     document.querySelector('#hangup-btn').addEventListener('click', () => peerConnection.close());
 
-    if (!isUserContent) {
-        closeConnection(peerConnection, peerId);
-    }
-
-    if (!isUserContent) {
-        restartConnection(peerConnection, peerId);
-    }
 }
 
 /**
@@ -244,6 +245,14 @@ async function peerAcceptConnection(peerId, nameId, isPeerContent, isUserContent
     
     const peerConnection = new RTCPeerConnection(configuration);
     peerConnectionStateLintener(peerConnection);
+    
+    if (!isUserContent) {
+        closeConnection(peerConnection, peerId);
+    }
+    
+    if (!isUserContent) {
+        restartConnection(peerConnection, peerId);
+    }
 
     if (!isPeerContent) {
         if (isUserContent) {
@@ -274,13 +283,6 @@ async function peerAcceptConnection(peerId, nameId, isPeerContent, isUserContent
 
     document.querySelector('#hangup-btn').addEventListener('click', () => peerConnection.close());
 
-    if (!isUserContent) {
-        closeConnection(peerConnection, peerId);
-    }
-
-    if (!isUserContent) {
-        restartConnection(peerConnection, peerId);
-    }
 }
 
 /**
@@ -354,17 +356,21 @@ function closeConnection(peerConnection, peerId) {
 function peerConnectionStateLintener(peerConnection) {
     peerConnection.addEventListener('icegatheringstatechange', () => {
         console.log( `ICE gathering state changed: ${peerConnection.iceGatheringState}`);
+        console.log( "peerConnection:", peerConnection);
     });
 
     peerConnection.addEventListener('connectionstatechange', () => {
         console.log(`Connection state change: ${peerConnection.connectionState}`);
+        console.log( "peerConnection:", peerConnection);
     });
 
     peerConnection.addEventListener('signalingstatechange', () => {
         console.log(`Signaling state change: ${peerConnection.signalingState}`);
+        console.log( "peerConnection:", peerConnection);
     });
 
     peerConnection.addEventListener('iceconnectionstatechange ', () => {
         console.log(`ICE connection state change: ${peerConnection.iceConnectionState}`);
+        console.log( "peerConnection:", peerConnection);
     });
 }

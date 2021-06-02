@@ -258,7 +258,7 @@ async function openUserMedia() {
                 facingMode: "user"
             },
             audio: {
-                echoCancellation: false,    //TODO: fixme-düzelt -> true olmalı
+                echoCancellation: true,    //TODO: fixme-düzelt -> true olmalı
                 noiseSuppression: true,    //TODO: fixme-düzelt -> true olmalı
                 autoGainControl: true,     //TODO: fixme-düzelt -> true olmalı
             }

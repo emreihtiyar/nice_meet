@@ -335,12 +335,8 @@ function init() {
 
     params = new URLSearchParams(location.search);
     roomDialog = new mdc.dialog.MDCDialog(document.querySelector('#room-dialog'));
-
-    //TODO: Burası Localde çalışamalar bittikten sonra açılacak 
-    if (location.hostname === "localhost" || location.hostname === "127.0.0.1") {
-    } else {
-        getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
-    }
+    
+    getCurrentUserInfo(); //kullanıcı ve kullanıcı id'sini alıyoruz, yok ise giriş sayfasına yönlendiriyoruz
     
     openUserMedia(); //kamera ve mikrofon'dan stream'i alıyoruz
     
@@ -361,6 +357,4 @@ function init() {
     });
 }
 
-$(document).ready(function () {
-    init();
-});
+init();
