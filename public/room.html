@@ -26,150 +26,162 @@
 </head>
 
 <body>
-    <div id="videos" class='single_cell'>
-        <div class="video-box" id="local-video-container" >
-            <video id="local-video" muted autoplay playsinline></video>
+    <div class="mdc-dialog" id="room-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
+    aria-describedby="my-dialog-content">
+    <div class="mdc-dialog__container">
+        <div class="mdc-dialog__surface">
+            <h2 class="mdc-dialog__title" id="my-dialog-title">Odaya Katıl</h2>
+            <div class="mdc-dialog__content" id="my-dialog-content">
+                Lütfen Oda ID'sini giriniz:
+                <div class="mdc-text-field">
+                    <input type="text" id="room-id" class="mdc-text-field__input">
+                    <label class="mdc-floating-label" for="my-text-field" aria-placeholder="Room ID"></label>
+                    <div class="mdc-line-ripple"></div>
+                </div>
+            </div>
+            <footer class="mdc-dialog__actions">
+                <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="no">
+                    <span class="mdc-button__label">Vazgeç</span>
+                </button>
+                <button id="confirmJoinBtn" type="button" class="mdc-button mdc-dialog__button"
+                    data-mdc-dialog-action="yes">
+                    <span class="mdc-button__label ">Odaya Katıl</span> 
+                </button>
+            </footer>
         </div>
     </div>
+    <div class="mdc-dialog__scrim"></div>
+    </div>
 
-    <div id="bars-container" class="bars-container">
-        <div id="chat-bar" class="chat-bar">
-            <div class="chat">
+    <div id="main-container" class="main-container">
+        <div id="videos" class='single_cell'>
+            <div class="video-box" id="local-video-container" >
+                <video id="local-video" muted autoplay playsinline></video>
+            </div>
+        </div>
+    
+        <div id="bars-container" class="bars-container">
+            <div id="chat-bar" class="chat-bar">
+                <div class="chat-bar-top">
+                    <div class="chat-title">
+                        Görüşmedeki Mesajlar
+                    </div>
+                </div>
+                <div class="chat">
+                    <!--
+                        <div class="message-bubble">
+                            <span class="message-sender">Emre İHTİYAR</span>
+                            <span class="message-time">12:24</span>
+                            <span class="message-text">Merhaba, bu bir deneme mesajıdır.</span>
+                        </div>
+                    -->
+                </div>
+                <div id="chat-bar-bottom" class="chat-bar-bottom">
+                    <input id="message-send-text" type="text" class="message-imput-text" placeholder="Mesajınızı Giriniz." />
+                    <button id="message-send-btn" type="button" class="message-send-btn"><span class="material-icons-round">send</span></button>
+                </div>
+            </div>
+            <div id="users-bar" class="users-bar">
+                <div class="users-bar-top">
+                    <div class="users-title">
+                        Görüşmedeki Kullanıcılar
+                    </div>
+                </div>
                 <!--
-                    <div class="message-bubble">
-                        <span class="message-sender">Emre İHTİYAR</span>
-                        <span class="message-time">12:24</span>
-                        <span class="message-text">Merhaba, bu bir deneme mesajıdır.</span>
+                    <div class="user-bubble">
+                        <span class="user-info-username">Emre İHTİYAR</span>
+                        <div class="user-bubble-icon-container">
+                            <span class="material-icons-round cast-icon" alt="cast info">cast</span>
+                        </div>
                     </div>
                 -->
             </div>
-            <div id="message-input-block" class="message-input-block">
-                <button id="message-send-btn" type="button" class="material-icons-round btn-send-message">send</button>
-                <input id="message-send-text" type="text" class="form-field" placeholder="Message" />
-            </div>
         </div>
-        <div id="users-bar" class="users-bar">
+    
+        <div id="canvas-container" class="canvas-container">
+            <canvas id="record-canvas" width="1280" height="720">
+                Sorry. This navigator is canvas not supported. That's why you can not recording meeting.
+            </canvas>
+        </div>
+    
+        <div id="side-alert-container" class="side-alert-container">
             <!--
-                <div class="user-bubble">
-                    <span class="user-info-username">Emre İHTİYAR</span>
-                    <span class="material-icons-round camera-icon" alt="camera info">videocam</span>
-                    <span class="material-icons-round mic-icon" alt="mic info">mic</span>
-                    <span class="material-icons-round cast-icon" alt="cast info">cast</span>
+            <div class="side-alert side-alert-primary" role="alert">
+                A simple primary alert—check it out!
+            </div>
+            <div class="side-alert side-alert-warning" role="alert">
+                A simple warning alert—check it out!
+            </div>
+            -->
+        </div>
+    
+        <div id="front-alert-container" class="front-alert-container hidden">
+            <div id="front-alert" class="front-alert">
+                <div class="front-alert-title">
+                    <h2 id="front-alert-title-text" class="front-alert-title-text">Toplantıya Diğer Katılımcıları Ekle</h2>
+                    <button id="close-front-alert-btn" class="current-room-button">
+                        <span class="material-icons-round icon-black">close</span>
+                    </button>
                 </div>
-            -->
+                <div id="front-alert-message" class="front-alert-message">
+                    Toplantınıza ait bilgiler aşağıdadır.
+                    Diğer katılımcıları eklemek için toplantı idsini veya toplantı linkini paylaşmanız yeterlidir.
+                </div>
+                <div class="current-room">
+                    <span class="current-room-label">ID:</span>
+                    <span id="current-room-id" class="current-room-text"></span>
+                    <button id="copy-room-id-btn" class="current-room-button">
+                        <span class="material-icons-round icon-black">content_copy</span>
+                    </button>
+                </div>
+                <div class="current-room">
+                    <span class="current-room-label">URL:</span>
+                    <span id="current-room-URL" class="current-room-text"></span>
+                    <button id="copy-room-URL-btn" class="current-room-button">
+                        <span class="material-icons-round icon-black">content_copy</span>
+                    </button>
+                </div>
+                <!--
+                    <div id="front-alert-buttons" class="front-alert-butons">
+                        <button class="front-alert-button">buton1</button>
+                        <button class="front-alert-button">buton2</button>
+                        <button class="front-alert-button">buton3</button>
+                    </div> 
+                -->
             </div>
-    </div>
-
-    <div id="canvas-container" class="canvas-container">
-        <canvas id="record-canvas" width="1280" height="720">
-            Sorry. This navigator is canvas not supported. That's why you can not recording meeting.
-        </canvas>
-    </div>
-
-    <div id="side-alert-container" class="side-alert-container">
-        <!--
-        <div class="side-alert side-alert-primary" role="alert">
-            A simple primary alert—check it out!
         </div>
-        <div class="side-alert side-alert-warning" role="alert">
-            A simple warning alert—check it out!
-        </div>
-        -->
-    </div>
-
-    <div id="front-alert-container" class="front-alert-container hidden">
-        <div id="front-alert" class="front-alert">
-            <div class="front-alert-title">
-                <h2 id="front-alert-title-text" class="front-alert-title-text">Toplantıya Diğer Katılımcıları Ekle</h2>
-                <button id="close-front-alert-btn" class="current-room-button">
-                    <span class="material-icons-round icon-black">close</span>
-                </button>
-            </div>
-            <div id="front-alert-message" class="front-alert-message">
-                Toplantınıza ait bilgiler aşağıdadır.
-                Diğer katılımcıları eklemek için toplantı idsini veya toplantı linkini paylaşmanız yeterlidir.
-            </div>
-            <div class="current-room">
-                <span class="current-room-label">ID:</span>
-                <span id="current-room-id" class="current-room-text"></span>
-                <button id="copy-room-id-btn" class="current-room-button">
-                    <span class="material-icons-round icon-black">content_copy</span>
-                </button>
-            </div>
-            <div class="current-room">
-                <span class="current-room-label">URL:</span>
-                <span id="current-room-URL" class="current-room-text"></span>
-                <button id="copy-room-URL-btn" class="current-room-button">
-                    <span class="material-icons-round icon-black">content_copy</span>
-                </button>
-            </div>
-            <!--
-                <div id="front-alert-buttons" class="front-alert-butons">
-                    <button class="front-alert-button">buton1</button>
-                    <button class="front-alert-button">buton2</button>
-                    <button class="front-alert-button">buton3</button>
-                </div> 
-            -->
-        </div>
-    </div>
-
-    <div class="mdc-dialog" id="room-dialog" role="alertdialog" aria-modal="true" aria-labelledby="my-dialog-title"
-        aria-describedby="my-dialog-content">
-        <div class="mdc-dialog__container">
-            <div class="mdc-dialog__surface">
-                <h2 class="mdc-dialog__title" id="my-dialog-title">Odaya Katıl</h2>
-                <div class="mdc-dialog__content" id="my-dialog-content">
-                    Lütfen Oda ID'sini giriniz:
-                    <div class="mdc-text-field">
-                        <input type="text" id="room-id" class="mdc-text-field__input">
-                        <label class="mdc-floating-label" for="my-text-field" aria-placeholder="Room ID"></label>
-                        <div class="mdc-line-ripple"></div>
+    
+        <div id="buttons">
+            <button class="material-icons-round btn-circle" id="create-btn">group_add</button>
+            <button class="material-icons-round btn-circle" id="join-btn">call</button>
+            <button class="material-icons-round hidden btn-circle" id="hangup-btn">call_end</button>
+            <button class="material-icons-round hidden btn-circle" id="share-btn">share</button>
+            <button class="material-icons-round btn-circle" id="mute-btn">mic</button>
+            <button class="material-icons-round btn-circle" id="video-btn">videocam</button>
+            <button class="material-icons-round btn-circle hidden" id="screen-share-btn">screen_share</button>
+            <button class="material-icons-round btn-circle hidden" id="local-video-show-btn">visibility</button>
+            <button class="material-icons-round btn-circle" id="full-screen-btn">fullscreen</button>
+            <button class="material-icons-round btn-circle hidden" id="record-btn">fiber_manual_record</button>
+            <button class="material-icons-round btn-circle hidden" id="chat-btn">message</button>
+            <button class="material-icons-round btn-circle hidden" id="users-btn">group</button>
+            <div id="device-dropdown">
+                <!--<button class="mdc-button" id="camera-options"><span class="mdc-button__label">Camera</span</button>-->
+                <button class="material-icons-round btn-circle" id="camera-options">arrow_drop_up</button>
+                <div class="mdc-menu-surface--anchor">
+                    <div class="mdc-menu mdc-menu-surface" tabindex="-1"
+                        style="transform-origin: center bottom; left: 0px; bottom: 0px; max-height: 767.781px;">
+                        <ul class="mdc-list" role="menu" aria-hidden="true">
+                            <div id="cameras">
+                                <li>Camera</li>
+                                <!--<li class="mdc-list-item mdc-ripple-upgraded" role="menuitem" tabindex="0">Passionfruit</li>-->
+                            </div>
+                            <li class="mdc-list-divider" role="separator"></li>
+                            <!--<div id="microphones">-->
+                            <!--<li>Audio</li>-->
+                            <!--[><li class="mdc-list-item mdc-ripple-upgraded" role="menuitem" tabindex="-1">Pineapple</li><]-->
+                            <!--</div>-->
+                        </ul>
                     </div>
-                </div>
-                <footer class="mdc-dialog__actions">
-                    <button type="button" class="mdc-button mdc-dialog__button" data-mdc-dialog-action="no">
-                        <span class="mdc-button__label">Vazgeç</span>
-                    </button>
-                    <button id="confirmJoinBtn" type="button" class="mdc-button mdc-dialog__button"
-                        data-mdc-dialog-action="yes">
-                        <span class="mdc-button__label ">Odaya Katıl</span> 
-                    </button>
-                </footer>
-            </div>
-        </div>
-        <div class="mdc-dialog__scrim"></div>
-    </div>
-
-    <div id="buttons">
-        <button class="material-icons-round btn-circle" id="create-btn">group_add</button>
-        <button class="material-icons-round btn-circle" id="join-btn">call</button>
-        <button class="material-icons-round hidden btn-circle" id="hangup-btn">call_end</button>
-        <button class="material-icons-round hidden btn-circle" id="share-btn">share</button>
-        <button class="material-icons-round btn-circle" id="mute-btn">mic</button>
-        <button class="material-icons-round btn-circle" id="video-btn">videocam</button>
-        <button class="material-icons-round btn-circle hidden" id="screen-share-btn">screen_share</button>
-        <button class="material-icons-round btn-circle hidden" id="local-video-show-btn">visibility</button>
-        <button class="material-icons-round btn-circle" id="full-screen-btn">fullscreen</button>
-        <button class="material-icons-round btn-circle hidden" id="record-btn">fiber_manual_record</button>
-        <button class="material-icons-round btn-circle hidden" id="chat-btn">message</button>
-        <button class="material-icons-round btn-circle hidden" id="users-btn">group</button>
-        <div id="device-dropdown">
-            <!--<button class="mdc-button" id="camera-options"><span class="mdc-button__label">Camera</span</button>-->
-            <button class="material-icons-round btn-circle" id="camera-options">arrow_drop_up</button>
-            <div class="mdc-menu-surface--anchor">
-                <div class="mdc-menu mdc-menu-surface" tabindex="-1"
-                    style="transform-origin: center bottom; left: 0px; bottom: 0px; max-height: 767.781px;">
-                    <ul class="mdc-list" role="menu" aria-hidden="true">
-                        <div id="cameras">
-                            <li>Camera</li>
-                            <!--<li class="mdc-list-item mdc-ripple-upgraded" role="menuitem" tabindex="0">Passionfruit</li>-->
-                        </div>
-                        <li class="mdc-list-divider" role="separator"></li>
-                        <!--<div id="microphones">-->
-                        <!--<li>Audio</li>-->
-                        <!--[><li class="mdc-list-item mdc-ripple-upgraded" role="menuitem" tabindex="-1">Pineapple</li><]-->
-                        <!--</div>-->
-                    </ul>
                 </div>
             </div>
         </div>

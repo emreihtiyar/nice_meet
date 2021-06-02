@@ -56,7 +56,8 @@ function sendMessageOnClick(event) {
         sendMessage(message);
         document.getElementById("message-send-text").value = "";
     }else{
-        console.log("Boş Mesaj gönderilmez ");
+        console.log("Boş Mesaj gönderilmez");
+        createSideAlert("Boş mesaj gönderilemez", "warning",3);
     }
 }
 

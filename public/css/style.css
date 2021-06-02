@@ -74,90 +74,200 @@ html, body {
   border-bottom-left-radius: 1%;*/
 }
 
+.cast-icon, .mic-icon, .camera-icon{
+  color: #000000;
+}
 
 /* Chat ve Mesajlaşma alanı*/
 .chat-bar{
+  background: rgb(230, 230, 230);
+  border-left: 1px solid #313131;
+  display: flex;
+  flex-direction: column;
+  opacity: 1;
+  overflow: hidden;
+  will-change: opacity;
+}
+
+.chat-bar-top {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  height: 64px;
+  min-height: 64px;
+  padding-left: 24px;
+}
+
+.chat-title{
+  font-family: 'Google Sans',Roboto,Arial,sans-serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5rem;
+  box-flex: 1;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat {
+  overflow-y: auto;
 }
 
 .message-bubble{
+  display: block;
+  padding: 14px 24px;
+  /*
   margin: 2px 1px;
   padding: 2px;
   position: relative;
   background-color: rgba(247, 243, 241,0.9);
   border-radius: 3%;
+  */
 }
 .message-sender{
+  /*display: inline-block;*/
+  color: #202124;
   display: inline-block;
-  
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 19px;
+  padding-right: 8px;
+  word-wrap: break-word;
 }
 
 .message-time{
-  position: absolute;
+  color: #5f6368;
   display: inline-block;
-  right: 2px;
-  top: 2px;
+  font-size: 12px;
 }
 
 .message-text{
+  color: #202124;
+  font-size: 13px;
+  line-height: 20px;
+  padding-top: 10px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
   display: block;
 }
 
-.message-input-block{
-  width: 100%;
+.chat-bar-bottom{
+  background: #eee;
+  display: flex;
+  align-items: baseline;
+  padding: 10px 15px;
+  align-items: center;
+  margin-top: 19px;
   position: absolute;
-  bottom: 0px;
-  height: 50px;
-  text-align: start;
-  background-color: sandybrown;
-}
-.message-input{
-  display: inline;
-  width: max-content;
-  width: 88%;
-  margin: 0px;
+  bottom: 0;
+  width: 96%;
 }
 
-.btn-send-message{
-  display: inline;
-  margin: 0px;
-  padding: 0px;
-  height: 30px;
-  width: 10%;
-  right: 2px;
-  background-color: seagreen;
-  align-self: flex-end;
-}
-
-.send-message-icon{
-  height: 100%;
+.message-imput-text{
+  background: #eee;
+  margin: 2px 0px 2px 2px;
+  padding: 3px 2px;
+  border: none;
   width: 100%;
+  border-radius: 5%;
+  outline: 0;
 }
 
-/* Kullanıcıların Listelenmesi*/
+.message-imput-text:focus{
+  outline: 0;
+}
+
+.message-imput-text::placeholder{
+  color: #4d4d4d;
+  font-weight: 300;
+  margin-left: 20px;
+}
+
+.message-send-btn{
+  float: right;
+  color: grey;
+  font-size: 30px;
+  vertical-align: middle;
+  border-radius: 100%;
+  border: none;
+}
+
+.message-send-btn:focus{
+  outline: none;
+}
+
+
+
+/*! Kullanıcıların Listelenmesi*/
 .users-bar{
+  background: rgb(230, 230, 230);
+  border-left: 1px solid #313131;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  opacity: 1;
+  overflow-x: hidden;
+  position: relative;
+  will-change: opacity;
+}
+
+.users-bar-top {
+  align-items: center;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  height: 64px;
+  min-height: 64px;
+  padding-left: 24px;
+}
+
+.users-title{
+  font-family: 'Google Sans',Roboto,Arial,sans-serif;
+  font-size: 1.125rem;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1.5rem;
+  box-flex: 1;
+  flex-grow: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .user-bubble{
-  position: relative;
-  width: 100%;
-  background-color: sandybrown;
-  padding: 20px 10px;
-  margin: 4px;
-  border-radius: 2%;
+  align-items: center;
+  display: flex;
+  font-family: "Google Sans";
+  height: 56px;
+  justify-content: space-between;
+  line-height: normal;
+  margin: 10px;
 }
 
 .user-info-username{
-  display: inline-block;
-  width: 50%;
-  text-align: left center;
+  align-items: flex-start;
+  display: -webkit-inline-box;
+  display: inline-flex;
+  flex-direction: row;
+  min-width: 0;
+  flex-direction: column;
+  box-flex: 1;
+  flex-grow: 1;
+  overflow: hidden;
 }
 
-.user-bubble img{
-  display: inline-block;
-  padding: 4px;
-  margin: 4px;
-  width: 30px;
-  height: 30px;
+.user-bubble-icon-container{
+  display: flex;
+}
+
+.user-bubble-icon-container span{
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-width: 48px;
 }
 
 /*Videolar ve grid yapısı ile ilgili kısım */
@@ -392,6 +502,10 @@ html, body {
   color: black;
 }
 
+.icon-blue{
+  color: lightblue;
+}
+
 /*! Side bar alert */
 .side-alert-container{
   position: absolute;
@@ -544,6 +658,7 @@ body {
   font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
 }
 body:before {
   content: "";
@@ -559,4 +674,8 @@ body:before {
   outline: none;
   border-color: #bf2626;
   box-shadow: 0 0 10px #bf2626;
+}
+
+.main-collapsed{
+  width: 80%;
 }

@@ -293,32 +293,40 @@ function highlightElement(elementID, second) {
 }
 
 function chatBtnListener() {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     if (chatBarIsOpen) {
         document.getElementById("chat-bar").style.display = "none";
         document.getElementById("bars-container").style.display = "none";
+        document.getElementById("main-container").classList.remove("main-collapsed");
         chatBarIsOpen = false;
     }else{
         if (usersBarIsOpen) {
             document.getElementById("users-bar").style.display = "none";
             usersBarIsOpen = false;
         }
+        document.getElementById("main-container").classList.add("main-collapsed");
         document.getElementById("chat-bar").style.display = "block";
+        document.getElementById("users-bar").style.display = "none";
         document.getElementById("bars-container").style.display = "block";
         chatBarIsOpen = true;
     }
 }
 
 function usersBtnListener() {
+    console.log(arguments.callee.name, " Fonksiyonun başındayız.");
     if (usersBarIsOpen) {
         document.getElementById("users-bar").style.display = "none";
         document.getElementById("bars-container").style.display = "none";
+        document.getElementById("main-container").classList.remove("main-collapsed");
         usersBarIsOpen = false;
     }else{
         if (chatBarIsOpen) {
             document.getElementById("chat-bar").style.display = "none";
             chatBarIsOpen = false;
         }
+        document.getElementById("main-container").classList.add("main-collapsed");
         document.getElementById("users-bar").style.display = "block";
+        document.getElementById("chat-bar").style.display = "none";
         document.getElementById("bars-container").style.display = "block";
         usersBarIsOpen = true;
     }
