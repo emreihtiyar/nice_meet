@@ -1,4 +1,4 @@
-async function getUserInfoByUID(uid) {
+async function getUserInfoByUID(uid) { //Test Function Not Used
     let userInfo;
     console.log("getUserInfoByUID, userInfo: ", userInfo);
     if (uid != null && uid != undefined && uid !="") {
@@ -10,7 +10,7 @@ async function getUserInfoByUID(uid) {
     return userInfo;
 }
 
-function userJoined(user) {
+function userJoined(user) { //Test Function Not Used
     let userInfo;
     if (uid != null && uid != undefined && uid !="") {
         db.collection('users').doc(user.name).get().then(snap => {
