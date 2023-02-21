@@ -1,13 +1,4 @@
-const firebaseConfig = {
-   apiKey: "AIzaSyCeuHu2KoX_rSVNAeKATRSDQEmMps1bHvs",
-   authDomain: "nicetomeet-33b4a.firebaseapp.com",
-   databaseURL: "https://nicetomeet-33b4a-default-rtdb.europe-west1.firebasedatabase.app",
-   projectId: "nicetomeet-33b4a",
-   storageBucket: "nicetomeet-33b4a.appspot.com",
-   messagingSenderId: "242610313695",
-   appId: "1:242610313695:web:6c804cd2dff52ad5990c6a",
-   measurementId: "G-F840F7K0YQ"
-};
+const firebaseConfig = null;
 
 let params;
 var db;
